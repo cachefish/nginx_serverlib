@@ -6,6 +6,7 @@
 #include "c_conf.h"  //和配置文件处理相关的类,名字带c_表示和类有关
 #include "c_func.h"    //各种函数声明
 
+
 //设置标题相关的全局变量
 char **g_os_argv; //原始命令行参数数组，在mian中赋值
 char *gp_envmem = nullptr;  //指向自己分配的env环境变量的内存
@@ -13,7 +14,11 @@ int g_environlen = 0; //环境变量所占内存大小
 
 int main(int argc,char *const *argv)
 {
-     CConfig *p_config = CConfig::GetInstance(); //单例类
+
+    g_os_argv = (char**) argv;
+    cc_init_setproctitle();
+
+    CConfig *p_config = CConfig::GetInstance(); //单例类
     if(p_config->Load("nginx.conf") == false) //把配置文件内容载入到内存
     {
         printf("配置文件载入失败，退出!\n");
@@ -27,6 +32,19 @@ int main(int argc,char *const *argv)
     // {
     //   printf("DBInfo=%s\n",pDBInfo);
     // }
+
+    //ps -eo pid,ppid,sid,tty,pgrp,comm,stat,cmd | grep -E 'bash|PID|test.exe'
+    cc_setproctitle("kaixin:master process");
    
+    for(;;)
+    {
+        sleep(1); //休息1秒
+        printf("休息1秒\n");
+    }
+    //在cc_init_setproctitle分配的内存
+   if(gp_envmem){   
+       delete []gp_envmem;
+       gp_envmem = nullptr;
+   }
     return 0;
 }
