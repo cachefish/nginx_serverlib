@@ -62,7 +62,7 @@ u_char *cc_vslprintf(u_char *buf,u_char *last,const char *fmt,va_list args) //va
 
             while(*fmt >= '0'&&*fmt <= '9') //如果%后边接的字符是 '0' --'9'之间的内容   ，比如  %16这种
             {
-                width = width*10 + ((*fmt++)-'0');    //1   16
+                width = width*10 + (*fmt++ - '0');    //1   16
             }
 
             //对于特殊格式，u X x .
@@ -86,7 +86,7 @@ u_char *cc_vslprintf(u_char *buf,u_char *last,const char *fmt,va_list args) //va
                 case '.':
                     fmt++;
                     while(*fmt >= '0'&&*fmt<='9'){
-                        frac_width = frac_width*10+((*fmt++)-'0');
+                        frac_width = frac_width*10+(*fmt++ - '0');
                     }
                     break;
 
@@ -109,6 +109,7 @@ u_char *cc_vslprintf(u_char *buf,u_char *last,const char *fmt,va_list args) //va
                     ui64 = (uint64_t)va_arg(args,u_int);
                 }
                 break;
+
             case 's':
                 p = va_arg(args,u_char*); 
                 while(*p&&buf<last){
@@ -116,6 +117,7 @@ u_char *cc_vslprintf(u_char *buf,u_char *last,const char *fmt,va_list args) //va
                 }
                 fmt++;
                 continue;
+                
             case 'P':
                 i64 = (int64_t)va_arg(args,pid_t);
                 sign = 1;

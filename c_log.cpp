@@ -34,7 +34,6 @@ cc_log_t cc_log;
 //fmt:通过这第一个普通参数来寻址后续的所有可变参数的类型及其值
 //调用格式比如：cc_log_stderr(0, "invalid option: \"%s\",%d", "testinfo",123);
 
-void cc_log_init();
 void cc_log_stderr(int err,const char *fmt,...)
 {
     va_list args;   //创建va_list类型变量
@@ -45,8 +44,8 @@ void cc_log_stderr(int err,const char *fmt,...)
 
     last = errstr +CC_MAX_ERROR_STR;//last指向整个buffer最后去了【指向最后一个有效位置的后面也就是非有效位】，作为一个标记，防止输出内容超过这么长,
 
-    p = cc_cpymem(errstr,"cc:",4);
-    va_start(args,fmt);
+    p = cc_cpymem(errstr,"cc: ",4);
+    va_start(args,fmt); //使args指向起始的参数
     p = cc_vslprintf(p,last,fmt,args);
     va_end(args);
 
@@ -124,7 +123,60 @@ void cc_log_error_core(int level,int err,const char *fmt,...)
 
     u_char strcurrtime[40] = {0};
     cc_slprintf(strcurrtime,(u_char*)-1,"%4d/%02d/%02d %02d:%02d:%02d",tm.tm_year,tm.tm_mon,tm.tm_mday,tm.tm_hour,tm.tm_min,tm.tm_sec);
-    p = cc_slprintf(p,last,"[%s]",err_levels[level]);
-    //未完待续
+    
+    p = cc_cpymem(errstr,strcurrtime,strlen((const char*)strcurrtime)); //日期增加进来，得到形如：     2019/01/08 20:26:07
+    p = cc_slprintf(p,last,"[%s]",err_levels[level]); //日志级别增加进来，得到形如：  2019/01/08 20:26:07 [crit] 
+    p = cc_slprintf(p,last,"%P:",cc_pid);  //支持%P格式，进程id增加进来，得到形如：   2019/01/08 20:50:15 [crit] 2037:
 
+    va_start(args,fmt); //使args指向起始的参数
+    p = cc_vslprintf(p,last,fmt,args);  //把fmt和args参数弄进去，组合出来
+    va_end(args);   //释放args
+    if(err){
+        p = cc_log_errno(p,last,err);
+    }
+    if(p >= (last-1)){
+        p = (last-1)-1;
+    }
+    *p++ = '\n';
+
+    ssize_t n;
+    while(1){
+        if(level > cc_log.log_level){
+            break;
+        }
+
+        n = write(cc_log.fd,errstr,p-errstr);
+        if(n == -1){
+            //写失败有问题
+            if(errno == ENOSPC){
+                //磁盘没有空间
+            }else{
+                if(cc_log.fd != STDERR_FILENO){
+                    n = write(STDERR_FILENO,errstr,p-errstr);
+                }
+            }
+        }
+        break;
+    }
+    return;
+}
+
+//日志文件初始化
+void cc_log_init()
+{
+    u_char *plogname = nullptr;
+    size_t nlen;
+    CConfig *p_config = CConfig::GetInstance();
+    if(plogname==nullptr){
+        plogname = (u_char*) CC_ERROR_LOG_PATH;//"logs/error.log" ,logs目录需要提前建立出来
+    }
+    cc_log.log_level = p_config->GetIntDefault("LogLevel",CC_LOG_NOTICE);
+    
+    //只写打开|追加到末尾|文件不存在就创建
+    cc_log.fd = open((const char*)plogname,O_WRONLY|O_APPEND|O_CREAT,0644);
+    if(cc_log.fd == -1){
+        cc_log_stderr(errno,"[alert] could not open error log file:open()\"%s\"failed",plogname);
+        cc_log.fd = STDERR_FILENO;  //定位到标准错误
+    }
+    return;
 }

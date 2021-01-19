@@ -24,7 +24,7 @@
 #define CC_LOG_INFO              7    //信息 【info】
 #define CC_LOG_DEBUG             8    //调试 【debug】：最低级别
 
-#define CC_ERROR_LOG_PATH       "logs/error1.log"   //定义日志存放的路径和文件名 
+#define CC_ERROR_LOG_PATH       "logs/error.log"   //定义日志存放的路径和文件名 
 
 
 
