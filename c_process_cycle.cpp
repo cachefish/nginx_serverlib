@@ -12,7 +12,7 @@
 static void cc_start_worker_processes(int threadnums);
 static int cc_spawn_process(int threadnums,const char *pprocname);
 static void cc_worker_process_cycle(int inum,const char *pprocname);
-static void cc_worker_proccess_init(int inum);
+static void cc_worker_process_init(int inum);
 
 //标题
 static u_char master_process[] = "master process";
@@ -102,7 +102,7 @@ static void cc_start_worker_processes(int threadnums)
 //描述：产生一个子进程
 //inum：进程编号【0开始】
 //pprocname：子进程名字"worker process"
-static int ngx_spawn_process(int inum,const char *pprocname)
+static int cc_spawn_process(int inum,const char *pprocname)
 {
     pid_t  pid;
 
@@ -116,7 +116,7 @@ static int ngx_spawn_process(int inum,const char *pprocname)
     case 0:  //子进程分支
         cc_parent = cc_pid;              //因为是子进程了，所有原来的pid变成了父pid
         cc_pid = getpid();                //重新获取pid,即本子进程的pid
-        ngx_worker_process_cycle(inum,pprocname);    //我希望所有worker子进程，在这个函数里不断循环着不出来，也就是说，子进程流程不往下边走;
+        cc_worker_process_cycle(inum,pprocname);    //我希望所有worker子进程，在这个函数里不断循环着不出来，也就是说，子进程流程不往下边走;
         break;
 
     default: //这个应该是父进程分支，直接break;，流程往switch之后走        
@@ -131,7 +131,7 @@ static int ngx_spawn_process(int inum,const char *pprocname)
 //描述：worker子进程的功能函数，每个woker子进程，就在这里循环着了（无限循环【处理网络事件和定时器事件以对外提供web服务】）
 //     子进程分叉才会走到之类
 //inum：进程编号【0开始】
-static void ngx_worker_process_cycle(int inum,const char *pprocname) 
+static void cc_worker_process_cycle(int inum,const char *pprocname) 
 {
     //重新为子进程设置进程名，不要与父进程重复------
     cc_worker_process_init(inum);

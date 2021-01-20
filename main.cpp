@@ -66,9 +66,11 @@ int main(int argc, char *const *argv)
 
     //(4)一些不好归类的其他类别的代码，准备放这里
     cc_init_setproctitle();    //把环境变量搬家
+   // ps -eo pid,ppid,sid,tty,pgrp,comm,stat,cmd | grep -E 'bash|PID|test.exe'
+
     // 开始正式的主流程，主流程一致在下边这个函数里循环
     cc_master_process_cycle();  
-   
+
     
     //--------------------------------------------------------------    
     for(;;)
