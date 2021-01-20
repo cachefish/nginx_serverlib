@@ -17,11 +17,16 @@ typedef struct{
 
 
 //外部全局量声明
+extern size_t g_argvneedmem;
+extern size_t g_envneedmem;
+extern int g_os_argc;
+
 extern char **g_os_argv;
 extern char *gp_envmem;
 extern int g_environlen;
 
 extern pid_t cc_pid;
+extern pid_t cc_parent;
 extern cc_log_t cc_log;
 
 #endif
