@@ -20,4 +20,11 @@ u_char *cc_log_errno(u_char *buf,u_char *last, int err);
 u_char *cc_slprintf(u_char *buf,u_char *last,const char *fmt,...);
 u_char *cc_vslprintf(u_char *buf,u_char *last,const char *fmt,va_list args);  //va_llis 用于获取不确定个数的参数
 
+
+//信号
+int cc_init_signals();
+
+//主进程流程
+void cc_master_process_cycle();
+
 #endif
