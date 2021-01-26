@@ -27,4 +27,5 @@ int cc_init_signals();
 //主进程流程
 void cc_master_process_cycle();
 
+int cc_daemon();
 #endif
