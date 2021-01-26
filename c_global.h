@@ -1,5 +1,6 @@
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
+#include<signal.h>
 
 //读配置结构体
 typedef struct 
@@ -20,13 +21,18 @@ typedef struct{
 extern size_t g_argvneedmem;
 extern size_t g_envneedmem;
 extern int g_os_argc;
-
 extern char **g_os_argv;
 extern char *gp_envmem;
 extern int g_environlen;
+extern int g_daemonized;
+
 
 extern pid_t cc_pid;
 extern pid_t cc_parent;
 extern cc_log_t cc_log;
+
+extern int           ngx_process;   
+extern sig_atomic_t  ngx_reap;    //原子操作
+
 
 #endif

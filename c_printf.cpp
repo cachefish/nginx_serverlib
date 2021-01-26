@@ -15,13 +15,12 @@ static u_char *cc_sprintf_num(u_char *buf, u_char *last, uint64_t ui64,u_char ze
 
 
 //----------------------------------------------------------------------------------------------------------------------
-//对于 nginx 自定义的数据结构进行标准格式化输出,就像 printf,vprintf 一样，我们顺道学习写这类函数到底内部是怎么实现的
 //该函数只不过相当于针对ngx_vslprintf()函数包装了一下，所以，直接研究ngx_vslprintf()即可
 u_char *cc_slprintf(u_char *buf, u_char *last, const char *fmt, ...) 
 {
     va_list   args;
     u_char   *p;
-
+    
     va_start(args, fmt); //使args指向起始的参数
     p = cc_vslprintf(buf, last, fmt, args);
     va_end(args);        //释放args   

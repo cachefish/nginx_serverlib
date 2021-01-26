@@ -60,19 +60,18 @@ void cc_master_process_cycle()
     int workprocess = p_config->GetIntDefault("WorkerProcesses",1);
     cc_start_worker_processes(workprocess);
 
-    sigemptyset(&set);
+    sigemptyset(&set);//不在屏蔽任何信号。
 
      for ( ;; ) 
     {
 
     //    usleep(100000);
-        cc_log_error_core(0,0,"haha--这是父进程，pid为%P",cc_pid);
+       //cc_log_error_core(0,0,"haha--这是父进程，pid为%P",cc_pid);
 
         //a)根据给定的参数设置新的mask 并 阻塞当前进程【因为是个空集，所以不阻塞任何信号】
         //b)此时，一旦收到信号，便恢复原先的信号屏蔽【我们原来的mask在上边设置的，阻塞了多达10个信号，从而保证我下边的执行流程不会再次被其他信号截断】
         //c)调用该信号对应的信号处理函数
         //d)信号处理函数返回后，sigsuspend返回，使程序流程继续往下走
-        //printf("for进来了！\n"); //发现，如果print不加\n，无法及时显示到屏幕上，是行缓存问题，以往没注意；可参考https://blog.csdn.net/qq_26093511/article/details/53255970
 
 //        sigsuspend(&set); //阻塞在这里，等待一个信号，此时进程是挂起的，不占用cpu时间，只有收到信号才会被唤醒（返回）；
                          //此时master进程完全靠信号驱动干活    
@@ -137,8 +136,7 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
     cc_worker_process_init(inum);
     cc_setproctitle(pprocname); //设置标题   
 
-    //暂时先放个死循环，我们在这个循环里一直不出来
-    //setvbuf(stdout,NULL,_IONBF,0); //这个函数. 直接将printf缓冲区禁止， printf就直接输出了。
+    
     for(;;)
     {
 
@@ -147,7 +145,7 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
         //fflush(stdout); //刷新标准输出缓冲区，把输出缓冲区里的东西打印到标准输出设备上，则printf里的东西会立即输出；
         //sleep(1); //休息1秒       
         //usleep(100000);
-        cc_log_error_core(0,0,"good--这是子进程，编号为%d,pid为%P！",inum,cc_pid);
+        //cc_log_error_core(0,0,"good--这是子进程，编号为%d,pid为%P！",inum,cc_pid);
         //printf("1212");
         //if(inum == 1)
         //{

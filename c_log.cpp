@@ -179,7 +179,6 @@ void cc_log_error_core(int level,  int err, const char *fmt, ...)
     }
     *p++ = '\n'; //增加个换行符       
 
-    //这么写代码是图方便：随时可以把流程弄到while后边去；大家可以借鉴一下这种写法
     ssize_t   n;
     while(1) 
     {        
