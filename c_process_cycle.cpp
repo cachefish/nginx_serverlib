@@ -54,6 +54,8 @@ void cc_master_process_cycle()
             strcat(title,g_os_argv[i]);
         }
         cc_setproctitle(title);
+
+        cc_log_error_core(CC_LOG_NOTICE,0,"%s %P启动并开始运行......!",title,cc_pid);
     }
     //从配置文件中读取要创建的worker进程数量
     CConfig *p_config = CConfig::GetInstance();
@@ -73,7 +75,7 @@ void cc_master_process_cycle()
         //c)调用该信号对应的信号处理函数
         //d)信号处理函数返回后，sigsuspend返回，使程序流程继续往下走
 
-//        sigsuspend(&set); //阻塞在这里，等待一个信号，此时进程是挂起的，不占用cpu时间，只有收到信号才会被唤醒（返回）；
+        sigsuspend(&set); //阻塞在这里，等待一个信号，此时进程是挂起的，不占用cpu时间，只有收到信号才会被唤醒（返回）；
                          //此时master进程完全靠信号驱动干活    
 
 //        printf("执行到sigsuspend()下边来了\n");
@@ -132,10 +134,12 @@ static int cc_spawn_process(int inum,const char *pprocname)
 //inum：进程编号【0开始】
 static void cc_worker_process_cycle(int inum,const char *pprocname) 
 {
-    //重新为子进程设置进程名，不要与父进程重复------
+
+    cc_process = CC_PROCESS_WORKER;     //设置进程的类型
+    //重新为子进程设置进程名，不能与父进程重复
     cc_worker_process_init(inum);
     cc_setproctitle(pprocname); //设置标题   
-
+    cc_log_error_core(CC_LOG_NOTICE,0,"%s %P 启动并开始运行......!",pprocname,cc_pid);
     
     for(;;)
     {
@@ -143,7 +147,7 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
         //先sleep一下 以后扩充.......
         //printf("worker进程休息1秒");       
         //fflush(stdout); //刷新标准输出缓冲区，把输出缓冲区里的东西打印到标准输出设备上，则printf里的东西会立即输出；
-        //sleep(1); //休息1秒       
+        sleep(1); //休息1秒       
         //usleep(100000);
         //cc_log_error_core(0,0,"good--这是子进程，编号为%d,pid为%P！",inum,cc_pid);
         //printf("1212");

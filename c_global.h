@@ -31,8 +31,8 @@ extern pid_t cc_pid;
 extern pid_t cc_parent;
 extern cc_log_t cc_log;
 
-extern int           ngx_process;   
-extern sig_atomic_t  ngx_reap;    //原子操作
+extern int           cc_process;   
+extern sig_atomic_t  cc_reap;    //原子操作
 
 
 #endif

@@ -25,7 +25,7 @@ size_t  g_argvneedmem=0;        //保存下这些argv参数所需要的内存大
 size_t  g_envneedmem=0;         //环境变量所占内存大小
 int     g_os_argc;              //参数个数 
 
-sig_atomic_t cc_reap;
+sig_atomic_t cc_reap;//标记子进程状态变化
 
 //和进程本身有关的全局量
 pid_t cc_pid;               //当前进程的pid
@@ -37,6 +37,7 @@ int main(int argc, char *const *argv)
 {   
     int exitcode = 0;           //退出代码，先给0表示正常退出
     int i;
+
     cc_pid = getpid();         //取得进程pid
     cc_parent = getppid();
     //统计argv所占的内存
@@ -73,6 +74,8 @@ int main(int argc, char *const *argv)
     }
     
     cc_log_init();             //日志初始化(创建/打开日志文件)
+
+    //信号初始化
     if(cc_init_signals()!=0){
         exitcode = 1;
         goto lblexit;

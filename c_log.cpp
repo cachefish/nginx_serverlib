@@ -60,7 +60,7 @@ void cc_log_stderr(int err, const char *fmt, ...)
                                                     //其实我认为这有问题，所以我才在上边errstr[cc_MAX_ERROR_STR+1]; 给加了1
                                               //比如你定义 char tmp[2]; 你如果last = tmp+2，那么last实际指向了tmp[2]，而tmp[2]在使用中是无效的
                                                 
-    p = cc_cpymem(errstr, "nginx: ", 7);     //p指向"nginx: "之后    
+    p = cc_cpymem(errstr, "cc: ", 4);     //p指向"nginx: "之后    
     
     va_start(args, fmt); //使args指向起始的参数
     p = cc_vslprintf(p,last,fmt,args); //组合出这个字符串保存在errstr里
@@ -83,19 +83,18 @@ void cc_log_stderr(int err, const char *fmt, ...)
     //往标准错误【一般是屏幕】输出信息    
     write(STDERR_FILENO,errstr,p - errstr); //三章七节讲过，这个叫标准错误，一般指屏幕
 
-    //测试代码：
-    //printf("cc_log_stderr()处理结果=%s\n",errstr);
-    //printf("cc_log_stderr()处理结果=%s",errstr);
-    
+    if(cc_log.fd > STDERR_FILENO)
+    {
+        cc_log_error_core(CC_LOG_STDERR,err,(const char*)errstr);
+    }
     return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //描述：给一段内存，一个错误编号，我要组合出一个字符串，形如：   (错误编号: 错误原因)，放到给的这段内存中去
-//     这个函数我改造的比较多，和原始的nginx代码多有不同
 //buf：是个内存，要往这里保存数据
 //last：放的数据不要超过这里
-//err：错误编号，我们是要取得这个错误编号对应的错误字符串，保存到buffer中
+//err：错误编号，是要取得这个错误编号对应的错误字符串，保存到buffer中
 u_char *cc_log_errno(u_char *buf, u_char *last, int err)
 {
     //以下代码是我自己改造，感觉作者的代码有些瑕疵
@@ -197,13 +196,11 @@ void cc_log_error_core(int level,  int err, const char *fmt, ...)
             //写失败有问题
             if(errno == ENOSPC) //写失败，且原因是磁盘没空间了
             {
-                //磁盘没空间了
-                //没空间还写个毛线啊
-                //先do nothing吧；
+            
             }
             else
             {
-                //这是有其他错误，那么我考虑把这个错误显示到标准错误设备吧；
+                //这是有其他错误，显示到标准错误设备吧；
                 if(cc_log.fd != STDERR_FILENO) //当前是定位到文件的，则条件成立
                 {
                     n = write(STDERR_FILENO,errstr,p - errstr);
