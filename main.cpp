@@ -10,7 +10,7 @@
 #include "c_func.h"    //各种函数声明
 #include"c_macro.h"
 #include"c_global.h"
-
+#include"c_socket.h"
 
 //本文件用的函数声明
 static void freeresource();

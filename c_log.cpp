@@ -76,7 +76,7 @@ void cc_log_stderr(int err, const char *fmt, ...)
     if (p >= (last - 1))
     {
         p = (last - 1) - 1; //把尾部空格留出来，这里感觉nginx处理的似乎就不对 
-                             //我觉得，last-1，才是最后 一个而有效的内存，而这个位置要保存\0，所以我认为再减1，这个位置，才适合保存\n
+                            
     }
     *p++ = '\n'; //增加个换行符    
 
@@ -91,14 +91,14 @@ void cc_log_stderr(int err, const char *fmt, ...)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//描述：给一段内存，一个错误编号，我要组合出一个字符串，形如：   (错误编号: 错误原因)，放到给的这段内存中去
+//描述：给一段内存，一个错误编号，要组合出一个字符串，形如：   (错误编号: 错误原因)，放到给的这段内存中去
 //buf：是个内存，要往这里保存数据
 //last：放的数据不要超过这里
 //err：错误编号，是要取得这个错误编号对应的错误字符串，保存到buffer中
 u_char *cc_log_errno(u_char *buf, u_char *last, int err)
 {
-    //以下代码是我自己改造，感觉作者的代码有些瑕疵
-    char *perrorinfo = strerror(err); //根据资料不会返回NULL;
+    
+    char *perrorinfo = strerror(err); 
     size_t len = strlen(perrorinfo);
 
     //然后我还要插入一些字符串： (%d:)  
@@ -112,7 +112,6 @@ u_char *cc_log_errno(u_char *buf, u_char *last, int err)
     size_t extralen = leftlen + rightlen; //左右的额外宽度
     if ((buf + len + extralen) < last)
     {
-        //保证整个我装得下，我就装，否则我全部抛弃 ,nginx的做法是 如果位置不够，就硬留出50个位置【哪怕覆盖掉以往的有效内容】，也要硬往后边塞，这样当然也可以；
         buf = cc_cpymem(buf, leftstr, leftlen);
         buf = cc_cpymem(buf, perrorinfo, len);
         buf = cc_cpymem(buf, rightstr, rightlen);
