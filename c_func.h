@@ -17,6 +17,7 @@ void cc_log_stderr(int err,const char *fmt,...);
 void cc_log_error_core(int level,int err,const char *fmt,...);
 
 u_char *cc_log_errno(u_char *buf,u_char *last, int err);
+u_char *cc_snprintf(u_char *buf, size_t max, const char *fmt, ...);
 u_char *cc_slprintf(u_char *buf,u_char *last,const char *fmt,...);
 u_char *cc_vslprintf(u_char *buf,u_char *last,const char *fmt,va_list args);  //va_llis 用于获取不确定个数的参数
 
