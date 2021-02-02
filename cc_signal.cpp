@@ -20,7 +20,7 @@ typedef struct{
 
 //声明一个信号处理函数
 static void cc_signal_handler(int signo, siginfo_t *siginfo, void *ucontext);
-static void ngx_process_get_status(void);   
+static void cc_process_get_status(void);   
 
 
 cc_signal_t signals[] = {
