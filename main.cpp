@@ -32,6 +32,9 @@ pid_t cc_pid;               //当前进程的pid
 pid_t cc_parent;        //父进程的pid
 int cc_process; //进程类型，如master  worker 
 
+//socket相关
+CSocket g_socket;
+
 
 int main(int argc, char *const *argv)
 {   
@@ -80,6 +83,11 @@ int main(int argc, char *const *argv)
         exitcode = 1;
         goto lblexit;
     }
+    if(g_socket.Initialize() == false){
+        exitcode = 1;
+        goto lblexit;
+    }
+
     cc_init_setproctitle();    //把环境变量搬家
    // ps -eo pid,ppid,sid,tty,pgrp,comm,stat,cmd | grep -E 'bash|PID|test.exe'
 
