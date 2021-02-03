@@ -22,5 +22,6 @@
 //来数据时候的处理，当连接上有数据来的时候，本函数会被ngx_epoll_process_events()所调用
 void CSocket::cc_wait_request_handler(lpcc_connection_t c)
 {
-
+        cc_log_stderr(errno,"2222222222222222");
+        return;
 }

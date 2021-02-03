@@ -1,0 +1,39 @@
+2021/02/03 14:17:48 [stderr] 1703: cc: sigaction(SIGHUP) succed!
+
+2021/02/03 14:17:48 [stderr] 1703: cc: sigaction(SIGINT) succed!
+
+2021/02/03 14:17:48 [stderr] 1703: cc: sigaction(SIGTERM) succed!
+
+2021/02/03 14:17:48 [stderr] 1703: cc: sigaction(SIGCHLD) succed!
+
+2021/02/03 14:17:48 [stderr] 1703: cc: sigaction(SIGQUIT) succed!
+
+2021/02/03 14:17:48 [stderr] 1703: cc: sigaction(SIGIO) succed!
+
+2021/02/03 14:17:48 [stderr] 1703: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/03 14:17:48 [stderr] 1703: cc: SCocket::cc_open_listening_sockets()中的bind()失败,i = 0  (13: Permission denied) 
+ (13: Permission denied) 
+2021/02/03 14:17:48 [stderr] 1703: cc: 程序退出
+
+2021/02/03 14:19:21 [stderr] 1741: cc: sigaction(SIGHUP) succed!
+
+2021/02/03 14:19:21 [stderr] 1741: cc: sigaction(SIGINT) succed!
+
+2021/02/03 14:19:21 [stderr] 1741: cc: sigaction(SIGTERM) succed!
+
+2021/02/03 14:19:21 [stderr] 1741: cc: sigaction(SIGCHLD) succed!
+
+2021/02/03 14:19:21 [stderr] 1741: cc: sigaction(SIGQUIT) succed!
+
+2021/02/03 14:19:21 [stderr] 1741: cc: sigaction(SIGIO) succed!
+
+2021/02/03 14:19:21 [stderr] 1741: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/03 14:19:21 [info] 1741: 监听80端口成功！
+2021/02/03 14:19:21 [info] 1741: 监听443端口成功！
+2021/02/03 14:19:21 [notice] 1742: master process ./test.exe 1742启动并开始运行......!
+2021/02/03 14:19:21 [notice] 1744: worker process 1744 启动并开始运行......!
+2021/02/03 14:19:21 [notice] 1743: worker process 1743 启动并开始运行......!
+2021/02/03 14:19:21 [notice] 1746: worker process 1746 启动并开始运行......!
+2021/02/03 14:19:21 [notice] 1745: worker process 1745 启动并开始运行......!

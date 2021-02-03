@@ -94,7 +94,7 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
 
             if(cc_epoll_add_event(s,
                                                             1,0,
-                                                            EPOLLET,
+                                                            0,
                                                             EPOLL_CTL_ADD,
                                                             newc) == -1)
             {
