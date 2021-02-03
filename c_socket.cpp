@@ -22,9 +22,9 @@ CSocket::CSocket():m_worker_connections(1),
 m_epollhandle(-1),
 m_ListenPortCount(1),
 m_pconnections(NULL),
-m_pfree_connections(NULL),
-m_pread_events(NULL),
-m_pwrite_events(NULL)
+m_pfree_connections(NULL)
+//m_pread_events(NULL),
+//m_pwrite_events(NULL)
 {
 
 }
@@ -40,12 +40,12 @@ CSocket::~CSocket()
     m_ListenSocketList.clear();
 
     //连接池相关释放
-    if(m_pwrite_events != NULL){
-        delete [] m_pwrite_events;
-    }
-    if(m_pread_events != NULL){
-        delete [] m_pread_events;
-    }
+    // if(m_pwrite_events != NULL){
+    //     delete [] m_pwrite_events;
+    // }
+    // if(m_pread_events != NULL){
+    //     delete [] m_pread_events;
+    // }
 
     if(m_pconnections != NULL){
         delete [] m_pconnections;
@@ -197,11 +197,11 @@ int CSocket::cc_epoll_init()
     
     m_pconnections = new cc_connection_t[m_connection_n];   
 
-    m_pread_events = new cc_event_t[m_connection_n];
-    m_pwrite_events = new cc_event_t[m_connection_n];
-    for(int i =0;i < m_connection_n; i++){
-        m_pconnections[i].instance = 1;     //失效标志位设置为1
-    }
+    // m_pread_events = new cc_event_t[m_connection_n];
+    // m_pwrite_events = new cc_event_t[m_connection_n];
+    // for(int i =0;i < m_connection_n; i++){
+    //     m_pconnections[i].instance = 1;     //失效标志位设置为1
+    // }
 
     int i = m_connection_n;
     lpcc_connection_t next = NULL;

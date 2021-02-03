@@ -81,7 +81,7 @@ void cc_master_process_cycle()
 //        printf("执行到sigsuspend()下边来了\n");
         
 ///        printf("master进程休息1秒\n");      
-        //sleep(1); //休息1秒        
+        sleep(1); //休息1秒        
         //以后扩充.......
 
     }// end for(;;)
@@ -162,7 +162,7 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
             
         //ngx_log_stderr(0,"good--这是子进程，pid为%P",ngx_pid); 
         //ngx_log_error_core(0,0,"good--这是子进程，编号为%d,pid为%P",inum,ngx_pid);
-
+        cc_process_events_and_timers();
     } //end for(;;)
     return;
 }
@@ -177,8 +177,7 @@ static void cc_worker_process_init(int inum)
     {
         cc_log_error_core(CC_LOG_ALERT,errno,"ngx_worker_process_init()中sigprocmask()失败!");
     }
-
-    
+    g_socket.cc_epoll_init();
     //....将来再扩充代码
     //....
     return;

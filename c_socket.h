@@ -1,5 +1,5 @@
 #ifndef __C_SOCKET_H__
-#define __C__SOCKET_H__
+#define __C_SOCKET_H__
 
 #include<vector>
 #include<sys/epoll.h>
@@ -22,7 +22,7 @@ typedef struct cc_listening_s
     int                                        fd;
     int                                        port;
     lpcc_connection_t       connection;     //连接池中的一个连接
-}cc_listening_t,*lpcc_listening_t;
+};
 
 //一个TCP连接  客户端主动发起
 
@@ -50,10 +50,10 @@ struct cc_connection_s
 
 
 //每个TCP连接至少需要一个读事件和写事件，事件结构
-typedef struct cc_event_s
-{
+// typedef struct cc_event_s
+// {
     
-}cc_event_t,*lpcc_event_t;
+// }cc_event_t,*lpcc_event_t;
 
 
 
@@ -99,8 +99,8 @@ class CSocket
         lpcc_connection_t                                             m_pconnections;                       //连接池的首地址
         lpcc_connection_t                                             m_pfree_connections;            //空闲连接链表头，连接池中总是有某些连接被占用，为了快速在池中找到一个空闲的连接，把空闲的连接专门用该成员记录;
 
-        lpcc_event_t                                                         m_pread_events;                        //读事件数组
-        lpcc_event_t                                                         m_pwrite_events;                       //写事件数组
+        //lpcc_event_t                                                         m_pread_events;                        //读事件数组
+       // lpcc_event_t                                                         m_pwrite_events;                       //写事件数组
         int                                                                               m_connection_n;                       //当前进程中所有连接对象的总数【连接池大小】
         int                                                                               m_free_connection_n;             //连接池中可用连接总数
 
