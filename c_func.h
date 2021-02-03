@@ -29,4 +29,5 @@ int cc_init_signals();
 void cc_master_process_cycle();
 
 int cc_daemon();
+void cc_process_events_and_timers();
 #endif
