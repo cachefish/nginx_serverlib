@@ -17,14 +17,17 @@
 #include"c_global.h"
 #include"c_func.h"
 #include"c_socket.h"
+#include"c_memory.h"
 
 CSocket::CSocket():m_worker_connections(1),
 m_epollhandle(-1),
 m_ListenPortCount(1),
 m_pconnections(NULL),
-m_pfree_connections(NULL)
+m_pfree_connections(NULL),
 //m_pread_events(NULL),
 //m_pwrite_events(NULL)
+m_iLenPkgHeader(sizeof(COMM_PKG_HEADER)),
+m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER))
 {
 
 }
@@ -50,6 +53,24 @@ CSocket::~CSocket()
     if(m_pconnections != NULL){
         delete [] m_pconnections;
     }
+
+    //接收消息队列内容释放
+    clearMsgRecvQueue();
+
+}
+
+void CSocket::clearMsgRecvQueue()                                           //清理接收消息队列
+{
+    char *sTmpMempoint;
+    CMemory *p_memory = CMemory::GetInstance();
+
+    while (!m_MsgRecvQueue.empty())
+    {
+        sTmpMempoint = m_MsgRecvQueue.front();
+        m_MsgRecvQueue.pop_front();
+        p_memory->FreeMemory(sTmpMempoint);
+    }
+    
 }
 
 //初始化

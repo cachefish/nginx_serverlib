@@ -2,8 +2,11 @@
 #define __C_SOCKET_H__
 
 #include<vector>
+#include<list>
 #include<sys/epoll.h>
 #include<sys/socket.h>
+
+#include"c_comm.h"
 
 //宏定义
 #define CC_LISTEN_BACKLOG  511  //已完成连接队列
@@ -42,8 +45,19 @@ struct cc_connection_s
 
 	cc_event_handler_pt      rhandler;       //读事件的相关处理方法
 	cc_event_handler_pt      whandler;       //写事件的相关处理方法
-	
-	//--------------------------------------------------
+	//-------------------------------------------------------------------------------------
+        //收包相关
+    unsigned char                    curStat;                                                               //当前收包状态
+    char                                        dataHeadInfo[_DATA_BUFSIZE_];           //用于保存收到的数据的包头信息
+
+    char                                        *precvbuf;                                                          //接收数据的缓冲区的头指针   
+    unsigned int                        irecvlen;                                                             //收到多少数据   
+    
+
+    bool                      ifnewrecvMem;                                                                 //是否分配内存 保存    包头+包体
+    char                      *pnewMemPointer;                                                         //指向分配内存首地址
+
+	//-----------------------------------------------------------------------------------------
 	lpcc_connection_t        next;           //这是个指针【等价于传统链表里的next成员：后继指针】，指向下一个本类型对象，用于把空闲的连接池对象串起来构成一个单向链表，
 
 };
@@ -55,6 +69,13 @@ struct cc_connection_s
     
 // }cc_event_t,*lpcc_event_t;
 
+//消息头  记录信息
+typedef struct _STRUC_MSG_HEADER
+{
+    lpcc_connection_t pConn;            //记录对应的连接
+    uint64_t                       iCurrsequence;       //收到数据包时记录对应连接的序号，用于比较是否连接已经作废
+    //...
+}STRUC_MSG_HEADER,*LPSTRUC_MSG_HEADER;
 
 
 //socket相关类
@@ -82,7 +103,16 @@ class CSocket
         //业务处理函数handler
         void cc_event_accept(lpcc_connection_t oldc);                                          //建立新连接
         void cc_wait_request_handler(lpcc_connection_t c);                              //设置数据来时的读处理函数
-        void cc_close_accepted_connection(lpcc_connection_t c);                  //用户连入，我们accept4()时，得到的socket在处理中产生失败，则资源用这个函数释放
+        void cc_close_connection(lpcc_connection_t c);                  //用户连入，我们accept4()时，得到的socket在处理中产生失败，则资源用这个函数释放
+        
+        //数据处理函数
+        ssize_t recvproc(lpcc_connection_t c,char *buf,ssize_t buflen);          //接收从客户端来的数据
+        void cc_wait_request_handler_proc_p1(lpcc_connection_t c);           //包头收完整后的处理
+        void cc_wait_request_handler_proc_plast(lpcc_connection_t c);       //收到一个完整包后的处理
+        void inMegRecvQueue(char *buf);                                                                       //收到一个完整消息后，入消息队列
+        void tmpoutMsgRecvQueue();                                      //临时清除队列中消息函数
+	    void clearMsgRecvQueue();                                            //清理接收消息队列
+        
         //获取对端信息相关 
         size_t cc_sock_ntop(struct sockaddr *sa,int port,u_char *text,size_t len);
 
@@ -106,6 +136,13 @@ class CSocket
 
         std::vector<lpcc_listening_t>                       m_ListenSocketList; //监听套接字队列
         struct epoll_event                                               m_events[CC_MAX_EVENTS];  //用于在epoll_wait()中承载返回的所发生的事件
+
+
+        //网络通讯
+        size_t                         m_iLenPkgHeader;                    //sizeof(COMM_PKG_HEADER);		
+	    size_t                         m_iLenMsgHeader;                    //sizeof(STRUC_MSG_HEADER);
+	    //消息队列
+	    std::list<char *>              m_MsgRecvQueue;                     //接收数据消息队列 
 
 };
 
