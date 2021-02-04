@@ -11,7 +11,7 @@
 #include"c_macro.h"
 #include"c_global.h"
 #include"c_socket.h"
-
+#include"c_memory.h"
 //本文件用的函数声明
 static void freeresource();
 //-----------------------------------------------------------------------------------------------------//
@@ -75,6 +75,9 @@ int main(int argc, char *const *argv)
         exitcode = 2; //标记找不到文件
         goto lblexit;
     }
+
+    //内存单例类
+    CMemory::GetInstance();
     
     cc_log_init();             //日志初始化(创建/打开日志文件)
 
