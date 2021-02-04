@@ -1,0 +1,131 @@
+2021/02/04 16:14:58 [stderr] 22516: cc: sigaction(SIGHUP) succed!
+
+2021/02/04 16:14:58 [stderr] 22516: cc: sigaction(SIGINT) succed!
+
+2021/02/04 16:14:58 [stderr] 22516: cc: sigaction(SIGTERM) succed!
+
+2021/02/04 16:14:58 [stderr] 22516: cc: sigaction(SIGCHLD) succed!
+
+2021/02/04 16:14:58 [stderr] 22516: cc: sigaction(SIGQUIT) succed!
+
+2021/02/04 16:14:58 [stderr] 22516: cc: sigaction(SIGIO) succed!
+
+2021/02/04 16:14:58 [stderr] 22516: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/04 16:14:58 [stderr] 22516: cc: SCocket::cc_open_listening_sockets()中的bind()失败,i = 0  (13: Permission denied) 
+ (13: Permission denied) 
+2021/02/04 16:14:58 [stderr] 22516: cc: 程序退出
+
+2021/02/04 16:15:10 [stderr] 22519: cc: sigaction(SIGHUP) succed!
+
+2021/02/04 16:15:10 [stderr] 22519: cc: sigaction(SIGINT) succed!
+
+2021/02/04 16:15:10 [stderr] 22519: cc: sigaction(SIGTERM) succed!
+
+2021/02/04 16:15:10 [stderr] 22519: cc: sigaction(SIGCHLD) succed!
+
+2021/02/04 16:15:10 [stderr] 22519: cc: sigaction(SIGQUIT) succed!
+
+2021/02/04 16:15:10 [stderr] 22519: cc: sigaction(SIGIO) succed!
+
+2021/02/04 16:15:10 [stderr] 22519: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/04 16:15:10 [info] 22519: 监听80端口成功！
+2021/02/04 16:15:10 [info] 22519: 监听443端口成功！
+2021/02/04 16:15:10 [notice] 22520: master process ./test.exe 22520启动并开始运行......!
+2021/02/04 16:15:10 [notice] 22521: worker process 22521 启动并开始运行......!
+2021/02/04 16:15:10 [notice] 22522: worker process 22522 启动并开始运行......!
+2021/02/04 16:15:10 [notice] 22523: worker process 22523 启动并开始运行......!
+2021/02/04 16:15:10 [notice] 22524: worker process 22524 启动并开始运行......!
+2021/02/04 16:15:52 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:15:53 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:15:54 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:15:55 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:15:56 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:15:57 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:15:58 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:15:59 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:00 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:02 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:03 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:04 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:05 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:06 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:08 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:10 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:11 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:12 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:13 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:40 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:47 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:48 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:50 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:54 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:16:55 [stderr] 22524: cc: 2222222222222222
+
+2021/02/04 16:36:46 [stderr] 22922: cc: sigaction(SIGHUP) succed!
+
+2021/02/04 16:36:46 [stderr] 22922: cc: sigaction(SIGINT) succed!
+
+2021/02/04 16:36:46 [stderr] 22922: cc: sigaction(SIGTERM) succed!
+
+2021/02/04 16:36:46 [stderr] 22922: cc: sigaction(SIGCHLD) succed!
+
+2021/02/04 16:36:46 [stderr] 22922: cc: sigaction(SIGQUIT) succed!
+
+2021/02/04 16:36:46 [stderr] 22922: cc: sigaction(SIGIO) succed!
+
+2021/02/04 16:36:46 [stderr] 22922: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/04 16:36:46 [info] 22922: 监听80端口成功！
+2021/02/04 16:36:46 [info] 22922: 监听443端口成功！
+2021/02/04 16:36:46 [notice] 22923: master process ./test.exe 22923启动并开始运行......!
+2021/02/04 16:36:46 [notice] 22924: worker process 22924 启动并开始运行......!
+2021/02/04 16:36:46 [notice] 22925: worker process 22925 启动并开始运行......!
+2021/02/04 16:36:46 [notice] 22926: worker process 22926 启动并开始运行......!
+2021/02/04 16:36:46 [notice] 22927: worker process 22927 启动并开始运行......!
+2021/02/04 16:39:43 [stderr] 23665: cc: sigaction(SIGHUP) succed!
+
+2021/02/04 16:39:43 [stderr] 23665: cc: sigaction(SIGINT) succed!
+
+2021/02/04 16:39:43 [stderr] 23665: cc: sigaction(SIGTERM) succed!
+
+2021/02/04 16:39:43 [stderr] 23665: cc: sigaction(SIGCHLD) succed!
+
+2021/02/04 16:39:43 [stderr] 23665: cc: sigaction(SIGQUIT) succed!
+
+2021/02/04 16:39:43 [stderr] 23665: cc: sigaction(SIGIO) succed!
+
+2021/02/04 16:39:43 [stderr] 23665: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/04 16:39:43 [info] 23665: 监听80端口成功！
+2021/02/04 16:39:43 [info] 23665: 监听443端口成功！
+2021/02/04 16:39:43 [notice] 23666: master process ./test.exe 23666启动并开始运行......!
+2021/02/04 16:39:43 [notice] 23668: worker process 23668 启动并开始运行......!
+2021/02/04 16:39:43 [notice] 23669: worker process 23669 启动并开始运行......!
+2021/02/04 16:39:43 [notice] 23670: worker process 23670 启动并开始运行......!
+2021/02/04 16:39:43 [notice] 23667: worker process 23667 启动并开始运行......!
