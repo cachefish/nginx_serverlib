@@ -82,7 +82,7 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
             
             if(!use_accept4){
                 if(setnonblock(s) == false){
-                    cc_close_accepted_connection(newc);
+                    cc_close_connection(newc);
                     return;
                 }
             }
@@ -98,7 +98,7 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
                                                             EPOLL_CTL_ADD,
                                                             newc) == -1)
             {
-                cc_close_accepted_connection(newc);
+                cc_close_connection(newc);
                 return;
             }
             break;
@@ -106,14 +106,3 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
     return;
 }
 
-//用户连入，我们accept4()时，得到的socket在处理中产生失败，则资源用这个函数释放
-void CSocket::cc_close_accepted_connection(lpcc_connection_t c)
-{
-    int fd = c->fd;
-    cc_free_connection(c);
-    c->fd = -1;
-    if(close(fd)==-1){
-        cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::cc_close_accept_connection()中close(%d)失败!",fd);
-    }
-    return;
-}
