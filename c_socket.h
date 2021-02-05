@@ -88,6 +88,10 @@ class CSocket
     public:
         virtual bool Initialize();                                        //初始化
 
+    public: 
+        char*outMsgRecvQueue();                                                             //将一个消息出消息队列
+        virtual void threadRecvProcFunc(char *pMsgBuf);             //处理客户端请求，虚函数，因为将来可以考虑自己来写子类继承本类
+
     public:
         int cc_epoll_init();                                                 //epoll功能初始化
         int cc_epoll_add_event(int fd,int readevent,int wrireevent,uint32_t otherflag,uint32_t eventtype,lpcc_connection_t c);//epoll增加事件
@@ -109,8 +113,8 @@ class CSocket
         ssize_t recvproc(lpcc_connection_t c,char *buf,ssize_t buflen);          //接收从客户端来的数据
         void cc_wait_request_handler_proc_p1(lpcc_connection_t c);           //包头收完整后的处理
         void cc_wait_request_handler_proc_plast(lpcc_connection_t c);       //收到一个完整包后的处理
-        void inMegRecvQueue(char *buf);                                                                       //收到一个完整消息后，入消息队列
-        void tmpoutMsgRecvQueue();                                      //临时清除队列中消息函数
+        void inMegRecvQueue(char *buf,int  &irmqc);                                                                       //收到一个完整消息后，入消息队列
+        //void tmpoutMsgRecvQueue();                                      //临时清除队列中消息函数
 	    void clearMsgRecvQueue();                                            //清理接收消息队列
         
         //获取对端信息相关 
@@ -134,7 +138,7 @@ class CSocket
         int                                                                               m_connection_n;                       //当前进程中所有连接对象的总数【连接池大小】
         int                                                                               m_free_connection_n;             //连接池中可用连接总数
 
-        std::vector<lpcc_listening_t>                       m_ListenSocketList; //监听套接字队列
+        std::vector<lpcc_listening_t>                         m_ListenSocketList; //监听套接字队列
         struct epoll_event                                               m_events[CC_MAX_EVENTS];  //用于在epoll_wait()中承载返回的所发生的事件
 
 
@@ -143,6 +147,10 @@ class CSocket
 	    size_t                         m_iLenMsgHeader;                    //sizeof(STRUC_MSG_HEADER);
 	    //消息队列
 	    std::list<char *>              m_MsgRecvQueue;                     //接收数据消息队列 
+        int                                 m_iRecvMsgQueueCount;
+
+        //线程
+        pthread_mutex_t     m_recvMessageQueueMutex;    //收消息队列互斥量
 
 };
 

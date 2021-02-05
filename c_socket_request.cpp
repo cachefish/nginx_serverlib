@@ -11,6 +11,7 @@
 //#include <sys/socket.h>
 #include <sys/ioctl.h> //ioctl
 #include <arpa/inet.h>
+#include<pthread.h>
 
 #include "c_conf.h"
 #include "c_macro.h"
@@ -18,6 +19,7 @@
 #include "c_func.h"
 #include "c_socket.h"
 #include"c_memory.h"
+#include"c_lockmutex.h"
 
 //来数据时候的处理，当连接上有数据来的时候，本函数会被ngx_epoll_process_events()所调用
 void CSocket::cc_wait_request_handler(lpcc_connection_t c)
@@ -153,7 +155,11 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t c)          //�
 
 void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t c)     //收到一个完整包后的处理
 {
-        inMegRecvQueue(c->pnewMemPointer);
+        int irmqc = 0;
+        inMegRecvQueue(c->pnewMemPointer,irmqc);
+
+        //选取线程池中的某个线程来处理业务逻辑
+        g_threadpool.Call(irmqc);
 
         c->ifnewrecvMem = false;
         c->pnewMemPointer = NULL;
@@ -164,31 +170,57 @@ void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t c)     //收�
 }
 
 
-void CSocket::inMegRecvQueue(char *buf)                                                                    //收到一个完整消息后，入消息队列
+void CSocket::inMegRecvQueue(char *buf, int &irmqc)                                                                    //收到一个完整消息后，入消息队列
 {
+        CLock lock(&m_recvMessageQueueMutex);
         m_MsgRecvQueue.push_back(buf);
+        ++m_iRecvMsgQueueCount;
+        irmqc = m_iRecvMsgQueueCount;
 
-        tmpoutMsgRecvQueue();
+        //tmpoutMsgRecvQueue();
 
         cc_log_stderr(0,"收到了一个完整的数据包[包头+包体]");
 }
-void CSocket::tmpoutMsgRecvQueue()                                     //临时清除队列中消息函数
-{      
+// void CSocket::tmpoutMsgRecvQueue()                                     //临时清除队列中消息函数
+// {      
+//         if(m_MsgRecvQueue.empty())
+//         {
+//                 return;
+//         }
+//         int size = m_MsgRecvQueue.size();
+//         if(size < 1000){
+//                 return;
+//         }
+//         //消息数过多
+//         CMemory *p_memory = CMemory::GetInstance();
+//         int cha = size - 500;
+//         for(int i =0;i<cha;++i){
+//                 char *sTmpMsgBuf = m_MsgRecvQueue.front();//返回第一个元素但不检查元素存在与否
+//                 m_MsgRecvQueue.pop_front();               //移除第一个元素但不返回	
+//                 p_memory->FreeMemory(sTmpMsgBuf);         //先释放掉把；
+//         }
+//         return;
+// }
+
+char *CSocket::outMsgRecvQueue()
+{
+        CLock lock(&m_recvMessageQueueMutex);
         if(m_MsgRecvQueue.empty())
         {
-                return;
+                return NULL;
         }
-        int size = m_MsgRecvQueue.size();
-        if(size < 1000){
-                return;
-        }
-        //消息数过多
-        CMemory *p_memory = CMemory::GetInstance();
-        int cha = size - 500;
-        for(int i =0;i<cha;++i){
-                char *sTmpMsgBuf = m_MsgRecvQueue.front();//返回第一个元素但不检查元素存在与否
-                m_MsgRecvQueue.pop_front();               //移除第一个元素但不返回	
-                p_memory->FreeMemory(sTmpMsgBuf);         //先释放掉把；
-        }
-        return;
+
+        char *sTmpMsgBuf = m_MsgRecvQueue.front();
+        m_MsgRecvQueue.pop_front();
+        --m_iRecvMsgQueueCount;
+        return sTmpMsgBuf;
+}
+
+//消息处理线程主函数，专门处理各种接收到的TCP消息
+//pMsgBuf：发送过来的消息缓冲区，消息本身是自解释的，通过包头可以计算整个包长
+//         消息本身格式【消息头+包头+包体】 
+void CSocket::threadRecvProcFunc(char *pMsgBuf)
+{
+
+    return;
 }

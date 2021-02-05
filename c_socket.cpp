@@ -27,9 +27,10 @@ m_pfree_connections(NULL),
 //m_pread_events(NULL),
 //m_pwrite_events(NULL)
 m_iLenPkgHeader(sizeof(COMM_PKG_HEADER)),
-m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER))
-{
-
+m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER)),
+m_iRecvMsgQueueCount(0)
+{   
+    pthread_mutex_init(&m_recvMessageQueueMutex,NULL);
 }
 
 
@@ -57,6 +58,7 @@ CSocket::~CSocket()
     //接收消息队列内容释放
     clearMsgRecvQueue();
 
+    pthread_mutex_destroy(&m_recvMessageQueueMutex);
 }
 
 void CSocket::clearMsgRecvQueue()                                           //清理接收消息队列
@@ -305,7 +307,7 @@ int CSocket::cc_epoll_add_event(int fd,
 
         ev.data.ptr = (void*)((uintptr_t)c | c->instance);//把对象弄进去，后续来事件时，用epoll_wait()后，这个对象能取出来用
         if(epoll_ctl(m_epollhandle,eventtype,fd,&ev) == -1){
-            cc_log_stderr(errno,"CSocket::cc_epoll_add_event()中epoll_ctl(%d,%d,%d,%u,%u)失败.",fd,readevent,writeevent,otherflag,eventtype);
+            cc_log_stderr(errno,"CSocekt::cc_epoll_add_event()中epoll_ctl(%d,%d,%d,%ud,%ud)失败.",fd,readevent,writeevent,otherflag,eventtype);
             return -1;
         }
         return 1;

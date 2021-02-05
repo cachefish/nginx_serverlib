@@ -55,7 +55,7 @@ void cc_master_process_cycle()
         }
         cc_setproctitle(title);
 
-        cc_log_error_core(CC_LOG_NOTICE,0,"%s %P启动并开始运行......!",title,cc_pid);
+        cc_log_error_core(CC_LOG_NOTICE,0,"%s %P[master进程]启动并开始运行......!",title,cc_pid);
     }
     //从配置文件中读取要创建的worker进程数量
     CConfig *p_config = CConfig::GetInstance();
@@ -139,7 +139,7 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
     //重新为子进程设置进程名，不能与父进程重复
     cc_worker_process_init(inum);
     cc_setproctitle(pprocname); //设置标题   
-    cc_log_error_core(CC_LOG_NOTICE,0,"%s %P 启动并开始运行......!",pprocname,cc_pid);
+    cc_log_error_core(CC_LOG_NOTICE,0,"%s %P [worker进程]启动并开始运行......!",pprocname,cc_pid);
     
     for(;;)
     {
@@ -164,6 +164,8 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
         //ngx_log_error_core(0,0,"good--这是子进程，编号为%d,pid为%P",inum,ngx_pid);
         cc_process_events_and_timers();
     } //end for(;;)
+
+    g_threadpool.StopAll();
     return;
 }
 
@@ -177,6 +179,14 @@ static void cc_worker_process_init(int inum)
     {
         cc_log_error_core(CC_LOG_ALERT,errno,"ngx_worker_process_init()中sigprocmask()失败!");
     }
+
+    CConfig *p_config = CConfig::GetInstance();
+    int tmpthreadnums = p_config->GetIntDefault("ProcMsgRecvWorkThreadCount",5);
+    if(g_threadpool.Create(tmpthreadnums)==false)
+    {
+        exit(-2);
+    }
+    sleep(1);
     g_socket.cc_epoll_init();
     //....将来再扩充代码
     //....
