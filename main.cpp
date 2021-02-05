@@ -34,7 +34,7 @@ int cc_process; //进程类型，如master  worker
 
 //socket相关
 CSocket g_socket;
-
+CThreadPool g_threadpool;
 
 int main(int argc, char *const *argv)
 {   

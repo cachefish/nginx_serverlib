@@ -129,3 +129,72 @@
 2021/02/04 16:39:43 [notice] 23669: worker process 23669 启动并开始运行......!
 2021/02/04 16:39:43 [notice] 23670: worker process 23670 启动并开始运行......!
 2021/02/04 16:39:43 [notice] 23667: worker process 23667 启动并开始运行......!
+2021/02/05 16:19:36 [stderr] 3176: cc: sigaction(SIGHUP) succed!
+
+2021/02/05 16:19:36 [stderr] 3176: cc: sigaction(SIGINT) succed!
+
+2021/02/05 16:19:36 [stderr] 3176: cc: sigaction(SIGTERM) succed!
+
+2021/02/05 16:19:36 [stderr] 3176: cc: sigaction(SIGCHLD) succed!
+
+2021/02/05 16:19:36 [stderr] 3176: cc: sigaction(SIGQUIT) succed!
+
+2021/02/05 16:19:36 [stderr] 3176: cc: sigaction(SIGIO) succed!
+
+2021/02/05 16:19:36 [stderr] 3176: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/05 16:19:36 [info] 3176: 监听80端口成功！
+2021/02/05 16:19:36 [info] 3176: 监听443端口成功！
+2021/02/05 16:19:36 [notice] 3177: master process ./test.exe 3177启动并开始运行......!
+2021/02/05 16:19:36 [notice] 3179: worker process 3179 启动并开始运行......!
+2021/02/05 16:19:36 [notice] 3181: worker process 3181 启动并开始运行......!
+2021/02/05 16:19:36 [notice] 3180: worker process 3180 启动并开始运行......!
+2021/02/05 16:19:36 [notice] 3178: worker process 3178 启动并开始运行......!
+2021/02/05 16:20:04 [stderr] 3179: cc: 2222222222222222
+
+2021/02/05 16:20:05 [stderr] 3179: cc: 2222222222222222
+
+2021/02/05 16:20:05 [stderr] 3179: cc: 收到了一个完整的数据包[包头+包体]
+
+2021/02/05 16:20:06 [stderr] 3179: cc: 2222222222222222
+
+2021/02/05 16:20:06 [notice] 3177: signal 17 (SIGCHLD) received from 3179
+2021/02/05 16:20:06 [alert] 3177: pid = 3179 exited on signal 6!
+2021/02/05 16:20:20 [stderr] 3180: cc: 2222222222222222 (11: Resource temporarily unavailable) 
+ (11: Resource temporarily unavailable) 
+2021/02/05 16:20:21 [stderr] 3180: cc: 2222222222222222 (11: Resource temporarily unavailable) 
+ (11: Resource temporarily unavailable) 
+2021/02/05 16:20:21 [stderr] 3180: cc: 收到了一个完整的数据包[包头+包体]
+
+2021/02/05 16:20:22 [stderr] 3180: cc: 2222222222222222 (11: Resource temporarily unavailable) 
+ (11: Resource temporarily unavailable) 
+2021/02/05 16:20:22 [notice] 3177: signal 17 (SIGCHLD) received from 3180
+2021/02/05 16:20:22 [alert] 3177: pid = 3180 exited on signal 6!
+2021/02/05 20:12:52 [stderr] 15383: cc: sigaction(SIGHUP) succed!
+
+2021/02/05 20:12:52 [stderr] 15383: cc: sigaction(SIGINT) succed!
+
+2021/02/05 20:12:52 [stderr] 15383: cc: sigaction(SIGTERM) succed!
+
+2021/02/05 20:12:52 [stderr] 15383: cc: sigaction(SIGCHLD) succed!
+
+2021/02/05 20:12:52 [stderr] 15383: cc: sigaction(SIGQUIT) succed!
+
+2021/02/05 20:12:52 [stderr] 15383: cc: sigaction(SIGIO) succed!
+
+2021/02/05 20:12:52 [stderr] 15383: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/05 20:12:52 [info] 15383: 监听80端口成功！
+2021/02/05 20:12:52 [info] 15383: 监听443端口成功！
+2021/02/05 20:12:52 [notice] 15384: master process ./test.exe 15384[master进程]启动并开始运行......!
+2021/02/05 20:12:53 [notice] 15385: worker process 15385 [worker进程]启动并开始运行......!
+2021/02/05 20:13:15 [stderr] 15385: cc: 2222222222222222
+
+2021/02/05 20:13:16 [stderr] 15385: cc: 2222222222222222
+
+2021/02/05 20:13:16 [stderr] 15385: cc: 收到了一个完整的数据包[包头+包体]
+
+2021/02/05 20:13:17 [stderr] 15385: cc: 2222222222222222
+
+2021/02/05 20:13:17 [notice] 15384: signal 17 (SIGCHLD) received from 15385
+2021/02/05 20:13:17 [alert] 15384: pid = 15385 exited on signal 6!

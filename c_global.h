@@ -2,7 +2,7 @@
 #define __GLOBAL_H__
 #include<signal.h>
 #include"c_socket.h"
-
+#include"c_threadpool.h"
 //读配置结构体
 typedef struct 
 {
@@ -28,6 +28,8 @@ extern int g_environlen;
 extern int g_daemonized;
 
 extern CSocket g_socket;
+extern CThreadPool g_threadpool;
+
 
 extern pid_t cc_pid;
 extern pid_t cc_parent;
