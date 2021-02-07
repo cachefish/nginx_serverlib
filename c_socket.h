@@ -89,7 +89,7 @@ class CSocket
         virtual bool Initialize();                                        //初始化
 
     public: 
-        char*outMsgRecvQueue();                                                             //将一个消息出消息队列
+        //char*outMsgRecvQueue();                                                             //将一个消息出消息队列
         virtual void threadRecvProcFunc(char *pMsgBuf);             //处理客户端请求，虚函数，因为将来可以考虑自己来写子类继承本类
 
     public:
@@ -113,9 +113,9 @@ class CSocket
         ssize_t recvproc(lpcc_connection_t c,char *buff,ssize_t buflen);          //接收从客户端来的数据
         void cc_wait_request_handler_proc_p1(lpcc_connection_t c);           //包头收完整后的处理
         void cc_wait_request_handler_proc_plast(lpcc_connection_t c);       //收到一个完整包后的处理
-        void inMsgRecvQueue(char *buf,int  &irmqc);                                                                       //收到一个完整消息后，入消息队列
+        //void inMsgRecvQueue(char *buf,int  &irmqc);                                                                       //收到一个完整消息后，入消息队列
         //void tmpoutMsgRecvQueue();                                      //临时清除队列中消息函数
-	    void clearMsgRecvQueue();                                            //清理接收消息队列
+	    //void clearMsgRecvQueue();                                            //清理接收消息队列
         
         //获取对端信息相关 
         size_t cc_sock_ntop(struct sockaddr *sa,int port,u_char *text,size_t len);
@@ -123,7 +123,10 @@ class CSocket
         //连接池  连接 相关
         lpcc_connection_t cc_get_connection(int isock);                                         //从连接池中获取一个空闲连接
         void cc_free_connection(lpcc_connection_t c);                                             //归还参数c所代表的连接到到连接池中
-
+    public:
+        //网络通讯
+        size_t                         m_iLenPkgHeader;                    //sizeof(COMM_PKG_HEADER);		
+	    size_t                         m_iLenMsgHeader;                    //sizeof(STRUC_MSG_HEADER);
     private:
         int                                                                             m_worker_connections;        //epoll连接的最大项数
         int                                                                             m_epollhandle;                            //epoll_create返回的句柄
@@ -142,15 +145,13 @@ class CSocket
         struct epoll_event                                               m_events[CC_MAX_EVENTS];  //用于在epoll_wait()中承载返回的所发生的事件
 
 
-        //网络通讯
-        size_t                         m_iLenPkgHeader;                    //sizeof(COMM_PKG_HEADER);		
-	    size_t                         m_iLenMsgHeader;                    //sizeof(STRUC_MSG_HEADER);
-	    //消息队列
-	    std::list<char *>              m_MsgRecvQueue;                     //接收数据消息队列 
-        int                                 m_iRecvMsgQueueCount;
+        
+	    // //消息队列
+	    // std::list<char *>              m_MsgRecvQueue;                     //接收数据消息队列 
+        // int                                 m_iRecvMsgQueueCount;
 
-        //线程
-        pthread_mutex_t     m_recvMessageQueueMutex;    //收消息队列互斥量
+        // //线程
+        // pthread_mutex_t     m_recvMessageQueueMutex;    //收消息队列互斥量
 
 };
 

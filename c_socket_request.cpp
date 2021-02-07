@@ -216,11 +216,7 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t c)
 void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t c)
 {
     //把这段内存放到消息队列中来；
-    int irmqc = 0;  //消息队列当前信息数量
-    inMsgRecvQueue(c->pnewMemPointer,irmqc); //返回消息队列当前信息数量irmqc，是调用本函数后的消息队列中消息数量
-
-    //激发线程池中的某个线程来处理业务逻辑
-    g_threadpool.Call(irmqc);
+    g_threadpool.inMsgRecvQueueAndSingal(c->pnewMemPointer);
     
     c->ifnewrecvMem    = false;            //内存不再需要释放，因为你收完整了包，这个包被上边调用inMsgRecvQueue()移入消息队列，那么释放内存就属于业务逻辑去干，不需要回收连接到连接池中干了
     c->pnewMemPointer  = NULL;
@@ -233,32 +229,32 @@ void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t c)
 //---------------------------------------------------------------
 //当收到一个完整包之后，将完整包入消息队列，这个包在服务器端应该是 消息头+包头+包体 格式
 //参数：返回 接收消息队列当前信息数量irmqc，因为临界着，所以这个值也是OK的；
-void CSocket::inMsgRecvQueue(char *buf,int &irmqc) //buf这段内存 ： 消息头 + 包头 + 包体
-{
-    CLock lock(&m_recvMessageQueueMutex);	 //自动加锁解锁很方便，不需要手工去解锁了
-    m_MsgRecvQueue.push_back(buf);	         //入消息队列
-    ++m_iRecvMsgQueueCount;                  //收消息队列数字+1，个人认为用变量更方便一点，比 m_MsgRecvQueue.size()高效
-    irmqc = m_iRecvMsgQueueCount;            //接收消息队列当前信息数量保存到irmqc
+// void CSocket::inMsgRecvQueue(char *buf,int &irmqc) //buf这段内存 ： 消息头 + 包头 + 包体
+// {
+//     CLock lock(&m_recvMessageQueueMutex);	 //自动加锁解锁很方便，不需要手工去解锁了
+//     m_MsgRecvQueue.push_back(buf);	         //入消息队列
+//     ++m_iRecvMsgQueueCount;                  //收消息队列数字+1，个人认为用变量更方便一点，比 m_MsgRecvQueue.size()高效
+//     irmqc = m_iRecvMsgQueueCount;            //接收消息队列当前信息数量保存到irmqc
 
 
-    //收到了一个完整的数据包，打印一个信息
-    //cc_log_stderr(0,"非常好，收到了一个完整的数据包【包头+包体】！");  
+//     //收到了一个完整的数据包，打印一个信息
+//     //cc_log_stderr(0,"非常好，收到了一个完整的数据包【包头+包体】！");  
     
-}
+// }
 
 //从消息队列中把一个包提取出来以备后续处理
-char *CSocket::outMsgRecvQueue() 
-{
-    CLock lock(&m_recvMessageQueueMutex);	//互斥
-    if(m_MsgRecvQueue.empty())
-    {
-        return NULL; //也许会存在这种情形： 消息本该有，但被干掉了，这里可能为NULL的？        
-    }
-    char *sTmpMsgBuf = m_MsgRecvQueue.front(); //返回第一个元素但不检查元素存在与否
-    m_MsgRecvQueue.pop_front();                //移除第一个元素但不返回	
-    --m_iRecvMsgQueueCount;                    //收消息队列数字-1
-    return sTmpMsgBuf;                         
-}
+// char *CSocket::outMsgRecvQueue() 
+// {
+//     CLock lock(&m_recvMessageQueueMutex);	//互斥
+//     if(m_MsgRecvQueue.empty())
+//     {
+//         return NULL; //也许会存在这种情形： 消息本该有，但被干掉了，这里可能为NULL的？        
+//     }
+//     char *sTmpMsgBuf = m_MsgRecvQueue.front(); //返回第一个元素但不检查元素存在与否
+//     m_MsgRecvQueue.pop_front();                //移除第一个元素但不返回	
+//     --m_iRecvMsgQueueCount;                    //收消息队列数字-1
+//     return sTmpMsgBuf;                         
+// }
 
 
 //消息处理线程主函数，专门处理各种接收到的TCP消息

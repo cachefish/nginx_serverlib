@@ -27,10 +27,9 @@ m_pfree_connections(NULL),
 //m_pread_events(NULL),
 //m_pwrite_events(NULL)
 m_iLenPkgHeader(sizeof(COMM_PKG_HEADER)),
-m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER)),
-m_iRecvMsgQueueCount(0)
+m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER))
 {   
-    pthread_mutex_init(&m_recvMessageQueueMutex,NULL);
+    
 }
 
 
@@ -55,25 +54,21 @@ CSocket::~CSocket()
         delete [] m_pconnections;
     }
 
-    //接收消息队列内容释放
-    clearMsgRecvQueue();
-
-    pthread_mutex_destroy(&m_recvMessageQueueMutex);
 }
 
-void CSocket::clearMsgRecvQueue()                                           //清理接收消息队列
-{
-    char *sTmpMempoint;
-    CMemory *p_memory = CMemory::GetInstance();
+// void CSocket::clearMsgRecvQueue()                                           //清理接收消息队列
+// {
+//     char *sTmpMempoint;
+//     CMemory *p_memory = CMemory::GetInstance();
 
-    while (!m_MsgRecvQueue.empty())
-    {
-        sTmpMempoint = m_MsgRecvQueue.front();
-        m_MsgRecvQueue.pop_front();
-        p_memory->FreeMemory(sTmpMempoint);
-    }
+//     while (!m_MsgRecvQueue.empty())
+//     {
+//         sTmpMempoint = m_MsgRecvQueue.front();
+//         m_MsgRecvQueue.pop_front();
+//         p_memory->FreeMemory(sTmpMempoint);
+//     }
     
-}
+// }
 
 //初始化
 bool CSocket::Initialize()
