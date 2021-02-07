@@ -16,13 +16,28 @@ CThreadPool::CThreadPool()
 {
     m_iRunningThreadNum = 0; 
     m_iLastEmgTime = 0;      
-   
+    m_iRecvMsgQueueCount = 0; //收消息队列
 }
 
 //析构函数
 CThreadPool::~CThreadPool()
 {
     //资源释放在StopAll()里统一进行
+    clearMsgRecvQueue();
+}
+
+void CThreadPool::clearMsgRecvQueue()
+{
+    char *pTmpMempoint;
+    CMemory *p_memory = CMemory::GetInstance();
+
+    while (!m_MsgRecvQueue.empty())
+    {
+        pTmpMempoint = m_MsgRecvQueue.front();
+        m_MsgRecvQueue.pop_front();
+        p_memory->FreeMemory(pTmpMempoint);
+    }
+    
 }
 
 //创建线程池中的线程，要手工调用，不在构造函数里调用了
@@ -70,7 +85,6 @@ void* CThreadPool::ThreadFunc(void* threadData)
     ThreadItem *pThread = static_cast<ThreadItem*>(threadData);
     CThreadPool *pThreadPoolObj = pThread->_pThis;
 
-    char *jobbuf = NULL;    
     CMemory *p_memory = CMemory::GetInstance();	    
     int err;
 
@@ -82,12 +96,13 @@ void* CThreadPool::ThreadFunc(void* threadData)
         if(err != 0) cc_log_stderr(err,"CThreadPool::ThreadFunc()pthread_mutex_lock()失败，返回的错误码为%d!",err);//有问题，要及时报告
         
 
-        while( (jobbuf = g_socket.outMsgRecvQueue()) == NULL && m_shutdown == false)
+        while( (pThreadPoolObj->m_MsgRecvQueue.size() == 0)&& m_shutdown == false)
         {
             //如果这个pthread_cond_wait被唤醒
               //那么会立即再次执行g_socket.outMsgRecvQueue()，如果拿到了一个NULL，则继续在这里wait着();
             if(pThread->ifrunning == false)            
                 pThread->ifrunning = true; //标记为true了才允许调用StopAll()：测试中发现如果Create()和StopAll()紧挨着调用，就会导致线程混乱，所以每个线程必须执行到这里，才认为是启动成功了      
+           
             pthread_cond_wait(&m_pthreadCond, &m_pthreadMutex); //整个服务器程序刚初始化的时候，所有线程必然是卡在这里等待的；
         }
         err = pthread_mutex_unlock(&m_pthreadMutex); //先解锁mutex
@@ -96,19 +111,24 @@ void* CThreadPool::ThreadFunc(void* threadData)
         //先判断线程退出这个条件
         if(m_shutdown)
         {            
-            if(jobbuf != NULL)
-            {
-                p_memory->FreeMemory(jobbuf);   
-            }
+            pthread_mutex_unlock(&m_pthreadMutex);
+
             break; 
         }
 
         //有数据可以处理
-        ++pThreadPoolObj->m_iRunningThreadNum;    //原子+1，这比互斥量要快很多
+        char *jobbuf = pThreadPoolObj->m_MsgRecvQueue.front();
+        pThreadPoolObj->m_MsgRecvQueue.pop_front();
+        --pThreadPoolObj->m_iRecvMsgQueueCount;
 
-cc_log_stderr(0,"执行开始---begin,tid=%ui!",tid);
-sleep(5); //临时测试代码
-cc_log_stderr(0,"执行结束---end,tid=%ui!",tid);
+        err = pthread_mutex_unlock(&m_pthreadMutex);
+        if(err != 0) cc_log_stderr(err,"CThreadPool::ThreadFunc()pthread_cond_wait()失,返回的错误码为%d!",err);
+       
+        ++pThreadPoolObj->m_iRunningThreadNum;    //原子+1，这比互斥量要快很多
+        g_socket.threadRecvProcFunc(jobbuf);
+// cc_log_stderr(0,"执行开始---begin,tid=%ui!",tid);
+// sleep(5); //临时测试代码
+// cc_log_stderr(0,"执行结束---end,tid=%ui!",tid);
 
         p_memory->FreeMemory(jobbuf);              //释放消息内存 
         --pThreadPoolObj->m_iRunningThreadNum;     //原子-1
@@ -157,9 +177,29 @@ void CThreadPool::StopAll()
     cc_log_stderr(0,"CThreadPool::StopAll()成功返回，线程池中线程全部正常结束!");
     return;    
 }
+ void CThreadPool::inMsgRecvQueueAndSingal(char *buf)
+ {
+    int err = pthread_mutex_lock(&m_pthreadMutex);
+    if(err != 0){
+         cc_log_stderr(err,"CThreadPool::inMsgRecvQueueAndSignal()pthread_mutex_lock()失败，返回的错误码为%d!",err);
+    }
+
+    m_MsgRecvQueue.push_back(buf);
+    ++m_iRecvMsgQueueCount;
+
+    err = pthread_mutex_unlock(&m_pthreadMutex);
+    if(err != 0)
+    {
+        cc_log_stderr(err,"CThreadPool::inMsgRecvQueueAndSignal()pthread_mutex_unlock()失败，返回的错误码为%d!",err);
+    }
+    Call();
+    return;
+
+ }
+
 
 //来任务了，调一个线程池中的线程下来干活
-void CThreadPool::Call(int irmqc)
+void CThreadPool::Call()
 {
     int err = pthread_cond_signal(&m_pthreadCond); //唤醒一个等待该条件的线程，也就是可以唤醒卡在pthread_cond_wait()的线程
     if(err != 0 )

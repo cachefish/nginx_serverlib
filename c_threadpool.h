@@ -18,10 +18,14 @@ public:
 public:
     bool Create(int threadNum);                 //创建该线程池中的所有线程
     void StopAll();                             //使线程池中的所有线程退出
-    void Call(int irmqc);                       //来任务了，调一个线程池中的线程下来干活
+
+    void inMsgRecvQueueAndSingal(char *buf);//收到一个完整消息后，入消息队列，并触发线程池中线程来处理该消息
+    void Call();                       //来任务了，调一个线程池中的线程下来干活
 
 private:
     static void* ThreadFunc(void *threadData);  //新线程的线程回调函数
+
+    void clearMsgRecvQueue();               //清理接收消息队列
 
 private:
     //定义一个 线程池中的 线程 的结构，以后可能做一些统计之类的 功能扩展，所以引入这么个结构来 代表线程 感觉更方便一些；    
@@ -48,6 +52,9 @@ private:
     time_t                     m_iLastEmgTime;      //上次发生线程不够用【紧急事件】的时间,防止日志报的太频繁
 
     std::vector<ThreadItem *>  m_threadVector;      //线程 容器 
+
+    std::list<char *>               m_MsgRecvQueue;         //接收数据消息队列 
+    int                                          m_iRecvMsgQueueCount;          //收消息队列大小
 };
 
 #endif
