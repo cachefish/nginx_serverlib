@@ -110,10 +110,10 @@ class CSocket
         void cc_close_connection(lpcc_connection_t c);                  //用户连入，我们accept4()时，得到的socket在处理中产生失败，则资源用这个函数释放
         
         //数据处理函数
-        ssize_t recvproc(lpcc_connection_t c,char *buf,ssize_t buflen);          //接收从客户端来的数据
+        ssize_t recvproc(lpcc_connection_t c,char *buff,ssize_t buflen);          //接收从客户端来的数据
         void cc_wait_request_handler_proc_p1(lpcc_connection_t c);           //包头收完整后的处理
         void cc_wait_request_handler_proc_plast(lpcc_connection_t c);       //收到一个完整包后的处理
-        void inMegRecvQueue(char *buf,int  &irmqc);                                                                       //收到一个完整消息后，入消息队列
+        void inMsgRecvQueue(char *buf,int  &irmqc);                                                                       //收到一个完整消息后，入消息队列
         //void tmpoutMsgRecvQueue();                                      //临时清除队列中消息函数
 	    void clearMsgRecvQueue();                                            //清理接收消息队列
         

@@ -349,7 +349,7 @@ int CSocket::cc_epoll_process_events(int timer)
     //有事件收到
     lpcc_connection_t c;
     uintptr_t                     instance;
-    uintptr_t                     revents;
+    uint32_t                     revents;
     for(int i =0;i<events;++i){         //遍历本次epoll_wait返回的所有事件，events才是返回的实际事件数量
         c = (lpcc_connection_t)(m_events[i].data.ptr);      //将地址的最后一位取出来，用instance变量标识, 见ngx_epoll_add_event，该值是当时随着连接池中的连接一起给进来的
         instance = (uintptr_t)c&1;
