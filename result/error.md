@@ -5,4 +5,15 @@
     
     使用gdb、valgrind工具调试 已修改
 
+
+
+    free invalid pointer的问题
+    在c_slogic.cpp中
+  	101 	pPkgBody = (void *)(pMsgBuf+m_iLenMsgHeader+m_iLenPkgHeader); //跳过消息头 以及 包头 ，指向包体
+
+    开始少加了m_iLenPkgHeader，导致指针指向有问题
+    
+
+
+
 ```

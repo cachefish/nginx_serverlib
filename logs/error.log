@@ -278,3 +278,111 @@
 
 2021/02/07 13:12:53 [stderr] 43964: cc: 执行结束---end,tid=139815153202944!
 
+2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGHUP) succed!
+
+2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGINT) succed!
+
+2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGTERM) succed!
+
+2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGCHLD) succed!
+
+2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGQUIT) succed!
+
+2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGIO) succed!
+
+2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/07 17:05:09 [info] 58553: 监听80端口成功！
+2021/02/07 17:05:09 [info] 58553: 监听443端口成功！
+2021/02/07 17:05:09 [notice] 58554: master process ./test.exe 58554 【master进程】启动并开始运行......!
+2021/02/07 17:05:10 [notice] 58555: worker process 58555 【worker进程】启动并开始运行......!
+2021/02/07 17:06:17 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:17 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:22 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:22 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:27 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:27 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:29 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:29 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:30 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:30 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:36 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:06:36 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGHUP) succed!
+
+2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGINT) succed!
+
+2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGTERM) succed!
+
+2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGCHLD) succed!
+
+2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGQUIT) succed!
+
+2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGIO) succed!
+
+2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/07 17:08:31 [info] 58741: 监听80端口成功！
+2021/02/07 17:08:31 [info] 58741: 监听443端口成功！
+2021/02/07 17:08:31 [notice] 58742: master process ./test.exe 58742 【master进程】启动并开始运行......!
+2021/02/07 17:08:32 [notice] 58743: worker process 58743 【worker进程】启动并开始运行......!
+2021/02/07 17:08:42 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:08:42 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:08:43 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:08:43 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+
+2021/02/07 17:08:44 [notice] 58742: signal 17 (SIGCHLD) received from 58743
+2021/02/07 17:08:44 [alert] 58742: pid = 58743 exited on signal 6!
+2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGHUP) succed!
+
+2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGINT) succed!
+
+2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGTERM) succed!
+
+2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGCHLD) succed!
+
+2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGQUIT) succed!
+
+2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGIO) succed!
+
+2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/07 17:13:55 [info] 59413: 监听80端口成功！
+2021/02/07 17:13:55 [info] 59413: 监听443端口成功！
+2021/02/07 17:13:55 [notice] 59414: master process ./test.exe 59414 【master进程】启动并开始运行......!
+2021/02/07 17:13:56 [notice] 59415: worker process 59415 【worker进程】启动并开始运行......!
+2021/02/07 17:14:05 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/07 17:14:05 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/07 17:14:08 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/07 17:14:08 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/07 17:14:10 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/07 17:14:10 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/07 17:14:11 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/07 17:14:11 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/07 17:14:13 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/07 17:14:13 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+

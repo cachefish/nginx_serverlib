@@ -1,7 +1,7 @@
 #ifndef __GLOBAL_H__
 #define __GLOBAL_H__
 #include<signal.h>
-#include"c_socket.h"
+#include"c_slogic.h"
 #include"c_threadpool.h"
 //读配置结构体
 typedef struct 
@@ -27,7 +27,7 @@ extern char *gp_envmem;
 extern int g_environlen;
 extern int g_daemonized;
 
-extern CSocket g_socket;
+extern CLogicSocket g_socket;
 extern CThreadPool g_threadpool;
 
 

@@ -12,6 +12,7 @@
 #include"c_global.h"
 #include"c_socket.h"
 #include"c_memory.h"
+#include"c_crc32.h"
 //本文件用的函数声明
 static void freeresource();
 //-----------------------------------------------------------------------------------------------------//
@@ -33,7 +34,7 @@ pid_t cc_parent;        //父进程的pid
 int cc_process; //进程类型，如master  worker 
 
 //socket相关
-CSocket g_socket;
+CLogicSocket g_socket;
 CThreadPool g_threadpool;
 
 int main(int argc, char *const *argv)
@@ -78,6 +79,7 @@ int main(int argc, char *const *argv)
 
     //内存单例类
     CMemory::GetInstance();
+    CCRC32::GetInstance();
     
     cc_log_init();             //日志初始化(创建/打开日志文件)
 
