@@ -25,9 +25,6 @@ typedef struct _COMM_PKG_HEADER
 }COMM_PKG_HEADER,*LPCOMM_PKG_HEADER;
 
 
-
-
-
 #pragma pack()
 
 #endif
