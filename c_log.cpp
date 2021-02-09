@@ -57,8 +57,6 @@ void cc_log_stderr(int err, const char *fmt, ...)
     memset(errstr,0,sizeof(errstr));     //我个人加的，这块有必要加，至少在va_end处理之前有必要，否则字符串没有结束标记不行的；***************************
 
     last = errstr + CC_MAX_ERROR_STR;        //last指向整个buffer最后去了【指向最后一个有效位置的后面也就是非有效位】，作为一个标记，防止输出内容超过这么长,
-                                                    //其实我认为这有问题，所以我才在上边errstr[cc_MAX_ERROR_STR+1]; 给加了1
-                                              //比如你定义 char tmp[2]; 你如果last = tmp+2，那么last实际指向了tmp[2]，而tmp[2]在使用中是无效的
                                                 
     p = cc_cpymem(errstr, "cc: ", 4);     //p指向"nginx: "之后    
     

@@ -15,7 +15,6 @@ static u_char *cc_sprintf_num(u_char *buf, u_char *last, uint64_t ui64,u_char ze
 
 
 //----------------------------------------------------------------------------------------------------------------------
-//该函数只不过相当于针对ngx_vslprintf()函数包装了一下，所以，直接研究ngx_vslprintf()即可
 u_char *cc_slprintf(u_char *buf, u_char *last, const char *fmt, ...) 
 {
     va_list   args;
@@ -41,18 +40,17 @@ u_char * cc_snprintf(u_char *buf, size_t max, const char *fmt, ...)   //类print
 
 
 //----------------------------------------------------------------------------------------------------------------------
-//对于 nginx 自定义的数据结构进行标准格式化输出,就像 printf,vprintf 一样，我们顺道学习写这类函数到底内部是怎么实现的
 //例如，给进来一个 "abc = %d",13   ,最终buf里得到的应该是   abc=13 这种结果
 //buf：往这里放数据
 //last：放的数据不要超过这里
 //fmt：以这个为首的一系列可变参数
 //支持的格式： %d【%Xd/%xd】:数字,    %s:字符串      %f：浮点,  %P：pid_t
-    //对于：ngx_log_stderr(0, "invalid option: \"%s\",%d", "testinfo",123);
+    //对于：cc_log_stderr(0, "invalid option: \"%s\",%d", "testinfo",123);
        //fmt = "invalid option: \"%s\",%d"
        //args = "testinfo",123
 u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
 {
-    //比如说你要调用ngx_log_stderr(0, "invalid option: \"%s\"", argv[i]);，那么这里的fmt就应该是:   invalid option: "%s"
+    //比如说你要调用cc_log_stderr(0, "invalid option: \"%s\"", argv[i]);，那么这里的fmt就应该是:   invalid option: "%s"
     //printf("fmt = %s\n",fmt);
     
     u_char     zero;
@@ -80,7 +78,7 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
             //-----------------变量初始化工作开始-----------------
             //++fmt是先加后用，也就是fmt先往后走一个字节位置，然后再判断该位置的内容
             zero  = (u_char) ((*++fmt == '0') ? '0' : ' ');  //判断%后边接的是否是个'0',如果是zero = '0'，否则zero = ' '，一般比如你想显示10位，而实际数字7位，前头填充三个字符，就是这里的zero用于填充
-                                                                //ngx_log_stderr(0, "数字是%010d", 12); 
+                                                                //cc_log_stderr(0, "数字是%010d", 12); 
                                                                 
             width = 0;                                       //格式字符% 后边如果是个数字，这个数字最终会弄到width里边来 ,这东西目前只对数字格式有效，比如%d,%f这种
             sign  = 1;                                       //显示的是否是有符号数，这里给1，表示是有符号数，除非你 用%u，这个u表示无符号数 
@@ -162,7 +160,7 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
 
                 //if (max_width) 
                 //{
-                //    width = NGX_INT_T_LEN;
+                //    width = CC_INT_T_LEN;
                 //}
 
                 break;   
@@ -301,18 +299,18 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
 static u_char * cc_sprintf_num(u_char *buf, u_char *last, uint64_t ui64, u_char zero, uintptr_t hexadecimal, uintptr_t width)
 {
     //temp[21]
-    u_char      *p, temp[CC_INT64_LEN + 1];   //#define NGX_INT64_LEN   (sizeof("-9223372036854775808") - 1)     = 20   ，注意这里是sizeof是包括末尾的\0，不是strlen；             
+    u_char      *p, temp[CC_INT64_LEN + 1];   //#define CC_INT64_LEN   (sizeof("-9223372036854775808") - 1)     = 20   ，注意这里是sizeof是包括末尾的\0，不是strlen；             
     size_t      len;
     uint32_t    ui32;
 
     static u_char   hex[] = "0123456789abcdef";  //跟把一个10进制数显示成16进制有关，换句话说和  %xd格式符有关，显示的16进制数中a-f小写
     static u_char   HEX[] = "0123456789ABCDEF";  //跟把一个10进制数显示成16进制有关，换句话说和  %Xd格式符有关，显示的16进制数中A-F大写
 
-    p = temp + CC_INT64_LEN; //NGX_INT64_LEN = 20,所以 p指向的是temp[20]那个位置，也就是数组最后一个元素位置
+    p = temp + CC_INT64_LEN; //CC_INT64_LEN = 20,所以 p指向的是temp[20]那个位置，也就是数组最后一个元素位置
 
     if (hexadecimal == 0)  
     {
-        if (ui64 <= (uint64_t) CC_MAX_UINT32_VALUE)   //NGX_MAX_UINT32_VALUE :最大的32位无符号数：十进制是‭4294967295‬
+        if (ui64 <= (uint64_t) CC_MAX_UINT32_VALUE)   //CC_MAX_UINT32_VALUE :最大的32位无符号数：十进制是‭4294967295‬
         {
             ui32 = (uint32_t) ui64; //能保存下
             do  //这个循环能够把诸如 7654321这个数字保存成：temp[13]=7,temp[14]=6,temp[15]=5,temp[16]=4,temp[17]=3,temp[18]=2,temp[19]=1
@@ -357,14 +355,13 @@ static u_char * cc_sprintf_num(u_char *buf, u_char *last, uint64_t ui64, u_char 
     while (len++ < width && buf < last)  //如果你希望显示的宽度是10个宽度【%12f】，而实际想显示的是7654321，只有7个宽度，那么这里要填充5个0进去到末尾，凑够要求的宽度
     {
         *buf++ = zero;  //填充0进去到buffer中（往末尾增加），比如你用格式  
-                                          //ngx_log_stderr(0, "invalid option: %10d\n", 21); 
+                                          //cc_log_stderr(0, "invalid option: %10d\n", 21); 
                                           //显示的结果是：nginx: invalid option:         21  ---21前面有8个空格，这8个弄个，就是在这里添加进去的；
     }
     
     len = (temp + CC_INT64_LEN) - p; //还原这个len，也就是要显示的数字的实际宽度【因为上边这个while循环改变了len的值】
     //现在还没把实际的数字比如“7654321”往buf里拷贝呢，要准备拷贝
 
-    //如下这个等号是我加的【我认为应该加等号】，nginx源码里并没有加;***********************************************
     if((buf + len) >= last)   //发现如果往buf里拷贝“7654321”后，会导致buf不够长【剩余的空间不够拷贝整个数字】
     {
         len = last - buf; //剩余的buf有多少我就拷贝多少

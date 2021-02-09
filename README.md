@@ -50,7 +50,7 @@ struct cc_connection_s
 
 
     int                                  fd;                        //套接字句柄socket
-    lpcc_listening_t       listening;          //如果这个连接被分配给了一个监听套接字，那么这个里边就指向监听套接字对应的那个lpngx_listening_t的内存首地址
+    lpcc_listening_t       listening;          //如果这个连接被分配给了一个监听套接字，那么这个里边就指向监听套接字对应的那个lpcc_listening_t的内存首地址
 	
     
     //--------------------------------------------------  
