@@ -18,16 +18,19 @@
 #include"c_func.h"
 #include"c_socket.h"
 #include"c_memory.h"
-
+#include"c_lockmutex.h"
 CSocket::CSocket():m_worker_connections(1),
 m_epollhandle(-1),
 m_ListenPortCount(1),
-m_pconnections(NULL),
-m_pfree_connections(NULL),
+m_RecyConnectionWaitTime(60),
+//m_pconnections(NULL),
+//m_pfree_connections(NULL),
 //m_pread_events(NULL),
 //m_pwrite_events(NULL)
 m_iLenPkgHeader(sizeof(COMM_PKG_HEADER)),
-m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER))
+m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER)),
+m_iSendMsgQueueCount(0),
+m_total_recyconnection_n(0)
 {   
     
 }
@@ -49,11 +52,6 @@ CSocket::~CSocket()
     // if(m_pread_events != NULL){
     //     delete [] m_pread_events;
     // }
-
-    if(m_pconnections != NULL){
-        delete [] m_pconnections;
-    }
-
 }
 
 // void CSocket::clearMsgRecvQueue()                                           //清理接收消息队列
@@ -78,11 +76,89 @@ bool CSocket::Initialize()
     return ret;
 }
 
+bool CSocket::Initialize_subproc()
+{
+    //发消息互斥量初始化
+    if(pthread_mutex_init(&m_sendMessageQueueMutex,NULL) != 0){
+        cc_log_stderr(0,"CSocket::initial_subproc()中的pthread_mutex_init()函数失败");
+        return false;
+    }
+    //连接池相关互斥量初始化
+    if(pthread_mutex_init(&m_connectionMutex,NULL)!=0)
+    {
+        cc_log_stderr(0,"CSocket::initial_subproc()中的pthread_mutex_init()函数失败");
+        return false;
+    }
+    //连接回收队列相关互斥量初始化
+    if(pthread_mutex_init(&m_recyconnqueueMutex,NULL)!=0)
+    {
+        cc_log_stderr(0,"CSocket::initial_subproc()中的pthread_mutex_init()函数失败");
+        return false;
+    }
+    //信号量初始化
+    if(sem_init(&m_semEventSendQueue,0,0)==-1)
+    {
+        cc_log_stderr(0,"CSocket::initial_subproc()中的sem_init()函数失败");
+        return false;
+    }
+    //开始创建线程
+    int err;
+    ThreadItem *pRecyconn= new ThreadItem(this);
+    m_threadVector.push_back(pRecyconn );
+    err = pthread_create(&pRecyconn->_Handle,NULL,ServerRecyConnectionThread,pRecyconn);
+    if(err != 0)
+    {
+        return false;
+    }
+    return true;
+
+}
+//关闭退出函数[子进程中执行]
+void CSocket::Shutdown_subproc()
+{
+    std::vector<ThreadItem*>::iterator iter;
+    for(iter = m_threadVector.begin();iter != m_threadVector.end();++iter){
+        pthread_join((*iter)->_Handle,NULL);
+    }
+
+    for(iter = m_threadVector.begin();iter != m_threadVector.end();++iter){
+        if(*iter){
+            delete *iter;
+        }
+    }
+
+    m_threadVector.clear();
+
+    //队列相关
+    clearMsgSendQueue();
+    clearconnection();
+
+    //多线程相关
+    pthread_mutex_destroy(&m_connectionMutex);
+    pthread_mutex_destroy(&m_sendMessageQueueMutex);
+    pthread_mutex_destroy(&m_recyconnqueueMutex);
+    sem_destroy(&m_semEventSendQueue);
+}
+
+//清理TCP发送消息队列
+void CSocket::clearMsgSendQueue()
+{
+    char * sTmpMempoint;
+    CMemory *p_memory = CMemory::GetInstance();
+    while(!m_MsgRecvQueue.empty()){
+        sTmpMempoint = m_MsgRecvQueue.front();
+        m_MsgRecvQueue.pop_front();
+        p_memory->FreeMemory(sTmpMempoint);
+    }
+}
+
+
 void CSocket::ReadConf()
 {
     CConfig *p_config = CConfig::GetInstance();
     m_worker_connections = p_config->GetIntDefault("worker_connections",m_worker_connections);
     m_ListenPortCount          = p_config->GetIntDefault("ListenPortCount",m_ListenPortCount);
+    m_RecyConnectionWaitTime = p_config->GetIntDefault("Sock_RecyConnectionWaitTime",m_RecyConnectionWaitTime);
     return;
 }
 
@@ -203,6 +279,21 @@ void CSocket::cc_close_listening_sockets()
     return ;
 }
 
+//将一个待发送消息入到发消息队列
+void CSocket::msgSend(char *psendbuf)
+{
+    CLock lock(&m_sendMessageQueueMutex);
+    m_MsgRecvQueue.push_back(psendbuf);
+    ++m_iSendMsgQueueCount;
+
+    if(sem_post(&m_semEventSendQueue)==-1)
+    {
+        cc_log_stderr(0,"CSocket::msgSend()sem_post()函数失败");
+    }
+    return;
+}
+
+
 int CSocket::cc_epoll_init()
 {
     m_epollhandle = epoll_create(m_worker_connections);
@@ -210,17 +301,19 @@ int CSocket::cc_epoll_init()
         cc_log_stderr(errno,"CSocket::cc_epoll_init()中epollcreate()失败");
         exit(2);
     }
+     //创建连接池【数组】、创建出来，这个东西后续用于处理所有客户端的连接
+    initconnection();
 
-    m_connection_n = m_worker_connections;      //记录当前连接池中连接总数
+    //m_connection_n = m_worker_connections;      //记录当前连接池中连接总数
     
-    m_pconnections = new cc_connection_t[m_connection_n];   
+    //m_pconnections = new cc_connection_t[m_connection_n];   
 
     // m_pread_events = new cc_event_t[m_connection_n];
     // m_pwrite_events = new cc_event_t[m_connection_n];
     // for(int i =0;i < m_connection_n; i++){
     //     m_pconnections[i].instance = 1;     //失效标志位设置为1
     // }
-
+/*
     int i = m_connection_n;
     lpcc_connection_t next = NULL;
     lpcc_connection_t c = m_pconnections;
@@ -237,29 +330,29 @@ int CSocket::cc_epoll_init()
 
     m_pfree_connections = next; //设置空闲连接链表头指针,因为现在next指向c[0]，现在整个链表都是空的
     m_free_connection_n = m_connection_n;       //空闲连接链表长度，因为现在整个链表都是空的，这两个长度相等；
-
+*/
     //(3)遍历所有监听socket【监听端口】，为每个监听socket增加一个 连接池中的连接
     //让一个socket和一个内存绑定，以方便记录该sokcet相关的数据、状态等等
-
     std::vector<lpcc_listening_t>::iterator  pos;
     for(pos = m_ListenSocketList.begin();pos != m_ListenSocketList.end();++pos){
-        c = cc_get_connection((*pos)->fd);
-        if(c == nullptr){
+        lpcc_connection_t pConn = cc_get_connection((*pos)->fd);
+        if(pConn == NULL){
             cc_log_stderr(errno,"CSocket::cc_epoll_init()中cc_get_connection失败");
             exit(2);
         }
-        c->listening = (*pos);                  //连接对象 和监听对象关联，方便通过连接对象找监听对象
-        (*pos)->connection = c;            //监听对象 和连接对象关联，方便通过监听对象找连接对象
+        pConn->listening = (*pos);                  //连接对象 和监听对象关联，方便通过连接对象找监听对象
+        (*pos)->connection = pConn;            //监听对象 和连接对象关联，方便通过监听对象找连接对象
 
         //对监听端口的读事件设置处理方法，因为监听端口是用来等对方连接的发送三路握手的，所以监听端口关心的就是读事件
-        c->rhandler=&CSocket::cc_event_accept;
+        pConn->rhandler=&CSocket::cc_event_accept;
 
         //往监听socket上增加监听事件
-         if(cc_epoll_add_event((*pos)->fd,       //socekt句柄
-                                1,0,             //读，写【只关心读事件，所以参数2：readevent=1,而参数3：writeevent=0】
+         if(cc_epoll_oper_event(
+                                (*pos)->fd,       //socekt句柄
+                                EPOLL_CTL_ADD,
+                                EPOLLIN|EPOLLRDHUP,             //读，写【只关心读事件，所以参数2：readevent=1,而参数3：writeevent=0】
                                 0,               //其他补充标记
-                                EPOLL_CTL_ADD,   //事件类型【增加，还有删除/修改】
-                                c                //连接池中的连接 
+                                pConn                //连接池中的连接 
                                 ) == -1) 
         {
             exit(2); //有问题，直接退出，日志 已经写过了
@@ -268,7 +361,7 @@ int CSocket::cc_epoll_init()
     return 1;
 }
 
-
+/*
 //epoll增加事件，可能被cc_epoll_init()等函数调用
 //fd:句柄，一个socket
 //readevent：表示是否是个读事件，0是，1不是
@@ -307,6 +400,54 @@ int CSocket::cc_epoll_add_event(int fd,
         }
         return 1;
 }
+*/
+
+//对epoll事件的具体操作
+int CSocket::cc_epoll_oper_event( int                fd,               //句柄，一个socket
+                        uint32_t           eventtype,        //事件类型，一般是EPOLL_CTL_ADD，EPOLL_CTL_MOD，EPOLL_CTL_DEL ，说白了就是操作epoll红黑树的节点(增加，修改，删除)
+                        uint32_t           flag,             //标志，具体含义取决于eventtype
+                        int                bcaction,         //补充动作，用于补充flag标记的不足  :  0：增加   1：去掉
+                        lpcc_connection_t pConn     )        //pConn：一个指针【其实是一个连接】，EPOLL_CTL_ADD时增加到红黑树中去，将来epoll_wait时能取出来用)
+{
+    struct epoll_event ev;
+    memset(&ev,0,sizeof(ev));
+
+    if(eventtype == EPOLL_CTL_ADD)
+    {
+        ev.data.ptr = (void*)pConn;
+        ev.events = flag;
+        pConn->events = flag;
+    }else if(eventtype == EPOLL_CTL_MOD){
+        //修改节点事件
+        //节点已经在红黑树中，修改节点的事件信息
+        ev.events = pConn->events;  //先把标记恢复回来
+        if(bcaction == 0)
+        {
+            //增加某个标记            
+            ev.events |= flag;
+        }
+        else if(bcaction == 1)
+        {
+            //去掉某个标记
+            ev.events &= ~flag;
+        }
+        else
+        {
+            //完全覆盖某个标记            
+            ev.events = flag;      //完全覆盖            
+        }
+        pConn->events = ev.events; //记录该标记
+    }else{
+        return 1;
+    }
+    ev.data.ptr = (void *)pConn;
+    
+    if(epoll_ctl(m_epollhandle,eventtype,fd,&ev) == -1){
+        cc_log_stderr(errno,"CSocket::cc_epoll_oper_event()中epoll_ctl(%d,%ud,%ud,%d)失败.",fd,eventtype,flag,bcaction);
+        return -1;
+    }
+    return 1;
+}
 
 
 //开始获取发生的事件消息
@@ -343,11 +484,11 @@ int CSocket::cc_epoll_process_events(int timer)
 
     //有事件收到
     lpcc_connection_t c;
-    uintptr_t                     instance;
+  //  uintptr_t                     instance;
     uint32_t                     revents;
     for(int i =0;i<events;++i){         //遍历本次epoll_wait返回的所有事件，events才是返回的实际事件数量
         c = (lpcc_connection_t)(m_events[i].data.ptr);      //将地址的最后一位取出来，用instance变量标识, 见ngx_epoll_add_event，该值是当时随着连接池中的连接一起给进来的
-        instance = (uintptr_t)c&1;
+       /* instance = (uintptr_t)c&1;
         c = (lpcc_connection_t)((uintptr_t)c&(uintptr_t)~1);//最后1位干掉，得到真正的c地址
 
         if(c->fd == -1){
@@ -358,12 +499,15 @@ int CSocket::cc_epoll_process_events(int timer)
             cc_log_error_core(CC_LOG_DEBUG,0,"CSocekt::cc_epoll_process_events()中遇到了instance值改变的过期事件:%p.",c); 
             continue; //这种事件就不处理即可
         }
-
+        */
         //事件未过期，开始处理
         revents = m_events[i].events;
-        if(revents&(EPOLLERR|EPOLLHUP)){        //如果发生了错误或者客户端断连
-            revents |= EPOLLIN|EPOLLOUT;
-        }
+
+        // if(revents&(EPOLLERR|EPOLLHUP)){        //如果发生了错误或者客户端断连
+        //     revents |= EPOLLIN|EPOLLOUT;
+        // }
+
+
         if(revents&EPOLLIN){                                        //如果是读事件
             (this->*(c->rhandler))(c);                             //如果新连接进入，这里执行的应该是CSocekt::cc_event_accept(c)】
                                                                                             //如果是已经连入，发送数据到这里，则这里执行的应该是 CSocekt::cc_wait_request_handler   
