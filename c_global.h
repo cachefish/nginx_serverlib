@@ -37,6 +37,6 @@ extern cc_log_t cc_log;
 
 extern int           cc_process;   
 extern sig_atomic_t  cc_reap;    //原子操作
-
+extern int           g_stopEvent;
 
 #endif

@@ -166,6 +166,16 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
                 //}
 
                 break;   
+             case 'L':  //转换int64j型数据，如果用%uL，则转换的数据类型是uint64 t
+                if (sign)
+                {
+                    i64 = va_arg(args, int64_t);
+                } 
+                else 
+                {
+                    ui64 = va_arg(args, uint64_t);
+                }
+                break;
             case 'p':  
                 ui64 = (uintptr_t) va_arg(args, void *); 
                 hex = 2;    //标记以大写字母显示十六进制中的A-F
