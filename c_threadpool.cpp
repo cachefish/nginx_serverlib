@@ -106,7 +106,7 @@ void* CThreadPool::ThreadFunc(void* threadData)
             pthread_cond_wait(&m_pthreadCond, &m_pthreadMutex); //整个服务器程序刚初始化的时候，所有线程必然是卡在这里等待的；
         }
         err = pthread_mutex_unlock(&m_pthreadMutex); //先解锁mutex
-        if(err != 0)  cc_log_stderr(err,"CThreadPool::ThreadFunc()pthread_cond_wait()失败，返回的错误码为%d!",err);//有问题，要及时报告
+        if(err != 0)  cc_log_stderr(err,"CThreadPool::ThreadFunc()pthread_mutex_unlock()失败，返回的错误码为%d!",err);//有问题，要及时报告
         
         //先判断线程退出这个条件
         if(m_shutdown)

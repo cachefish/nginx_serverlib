@@ -13,6 +13,7 @@
 #include"c_socket.h"
 #include"c_memory.h"
 #include"c_crc32.h"
+#include"c_slogic.h"
 //本文件用的函数声明
 static void freeresource();
 //-----------------------------------------------------------------------------------------------------//
@@ -32,6 +33,8 @@ sig_atomic_t cc_reap;//标记子进程状态变化
 pid_t cc_pid;               //当前进程的pid
 pid_t cc_parent;        //父进程的pid
 int cc_process; //进程类型，如master  worker 
+int g_stopEvent;        //标志程序退出
+
 
 //socket相关
 CLogicSocket g_socket;
@@ -42,6 +45,7 @@ int main(int argc, char *const *argv)
     int exitcode = 0;           //退出代码，先给0表示正常退出
     int i;
 
+    g_stopEvent = 0;
     cc_pid = getpid();         //取得进程pid
     cc_parent = getppid();
     //统计argv所占的内存
