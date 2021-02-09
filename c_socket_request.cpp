@@ -22,74 +22,74 @@
 #include "c_lockmutex.h"  //自动释放互斥量的一个类
 
 //来数据时候的处理，当连接上有数据来的时候，本函数会被cc_epoll_process_events()所调用  ,官方的类似函数为cc_http_wait_request_handler();
-void CSocket::cc_wait_request_handler(lpcc_connection_t c)
+void CSocket::cc_wait_request_handler(lpcc_connection_t pConn)
 {  
     //收包，注意我们用的第二个和第三个参数，我们用的始终是这两个参数，因此我们必须保证 c->precvbuf指向正确的收包位置，保证c->irecvlen指向正确的收包宽度
-    ssize_t reco = recvproc(c,c->precvbuf,c->irecvlen); 
+    ssize_t reco = recvproc(pConn,pConn->precvbuf,pConn->irecvlen); 
     if(reco <= 0)  
     {
         return;//该处理的上边这个recvproc()函数处理过了，这里<=0是直接return        
     }
 
     //走到这里，说明成功收到了一些字节（>0），就要开始判断收到了多少数据了     
-    if(c->curStat == _PKG_HD_INIT) //连接建立起来时肯定是这个状态，因为在cc_get_connection()中已经把curStat成员赋值成_PKG_HD_INIT了
+    if(pConn->curStat == _PKG_HD_INIT) //连接建立起来时肯定是这个状态，因为在cc_get_connection()中已经把curStat成员赋值成_PKG_HD_INIT了
     {        
         if(reco == m_iLenPkgHeader)//正好收到完整包头，这里拆解包头
         {   
-            cc_wait_request_handler_proc_p1(c); //那就调用专门针对包头处理完整的函数去处理把。
+            cc_wait_request_handler_proc_p1(pConn); //那就调用专门针对包头处理完整的函数去处理把。
         }
         else
 		{
 			//收到的包头不完整--我们不能预料每个包的长度，也不能预料各种拆包/粘包情况，所以收到不完整包头【也算是缺包】是很可能的；
-            c->curStat        = _PKG_HD_RECVING;                 //接收包头中，包头不完整，继续接收包头中	
-            c->precvbuf       = c->precvbuf + reco;              //注意收后续包的内存往后走
-            c->irecvlen       = c->irecvlen - reco;              //要收的内容当然要减少，以确保只收到完整的包头先
+            pConn->curStat        = _PKG_HD_RECVING;                 //接收包头中，包头不完整，继续接收包头中	
+            pConn->precvbuf       = pConn->precvbuf + reco;              //注意收后续包的内存往后走
+            pConn->irecvlen       = pConn->irecvlen - reco;              //要收的内容当然要减少，以确保只收到完整的包头先
         } //end  if(reco == m_iLenPkgHeader)
     } 
-    else if(c->curStat == _PKG_HD_RECVING) //接收包头中，包头不完整，继续接收中，这个条件才会成立
+    else if(pConn->curStat == _PKG_HD_RECVING) //接收包头中，包头不完整，继续接收中，这个条件才会成立
     {
-        if(c->irecvlen == reco) //要求收到的宽度和我实际收到的宽度相等
+        if(pConn->irecvlen == reco) //要求收到的宽度和我实际收到的宽度相等
         {
             //包头收完整了
-            cc_wait_request_handler_proc_p1(c); //那就调用专门针对包头处理完整的函数去处理把。
+            cc_wait_request_handler_proc_p1(pConn); //那就调用专门针对包头处理完整的函数去处理把。
         }
         else
 		{
 			//包头还是没收完整，继续收包头
             //c->curStat        = _PKG_HD_RECVING;                 //没必要
-            c->precvbuf       = c->precvbuf + reco;              //注意收后续包的内存往后走
-            c->irecvlen       = c->irecvlen - reco;              //要收的内容当然要减少，以确保只收到完整的包头先
+            pConn->precvbuf       = pConn->precvbuf + reco;              //注意收后续包的内存往后走
+            pConn->irecvlen       = pConn->irecvlen - reco;              //要收的内容当然要减少，以确保只收到完整的包头先
         }
     }
-    else if(c->curStat == _PKG_BD_INIT) 
+    else if(pConn->curStat == _PKG_BD_INIT) 
     {
         //包头刚好收完，准备接收包体
-        if(reco == c->irecvlen)
+        if(reco == pConn->irecvlen)
         {
             //收到的宽度等于要收的宽度，包体也收完整了
-            cc_wait_request_handler_proc_plast(c);
+            cc_wait_request_handler_proc_plast(pConn);
         }
         else
 		{
 			//收到的宽度小于要收的宽度
-			c->curStat = _PKG_BD_RECVING;					
-			c->precvbuf = c->precvbuf + reco;
-			c->irecvlen = c->irecvlen - reco;
+			pConn->curStat = _PKG_BD_RECVING;					
+			pConn->precvbuf = pConn->precvbuf + reco;
+			pConn->irecvlen = pConn->irecvlen - reco;
 		}
     }
-    else if(c->curStat == _PKG_BD_RECVING) 
+    else if(pConn->curStat == _PKG_BD_RECVING) 
     {
         //接收包体中，包体不完整，继续接收中
-        if(c->irecvlen == reco)
+        if(pConn->irecvlen == reco)
         {
             //包体收完整了
-            cc_wait_request_handler_proc_plast(c);
+            cc_wait_request_handler_proc_plast(pConn);
         }
         else
         {
             //包体没收完整，继续收
-            c->precvbuf = c->precvbuf + reco;
-			c->irecvlen = c->irecvlen - reco;
+            pConn->precvbuf = pConn->precvbuf + reco;
+			pConn->irecvlen = pConn->irecvlen - reco;
         }
     }  //end if(c->curStat == _PKG_HD_INIT)
     return;
@@ -109,7 +109,11 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
     if(n == 0)
     {
         //客户端关闭【应该是正常完成了4次挥手】，我这边就直接回收连接连接，关闭socket即可 
-        cc_close_connection(c);
+        if(close(c->fd) == -1)
+        {
+            cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::recvproc()中close(%d)失败!",c->fd);  
+        }
+        inRecyConnectQueue(c);
         return -1;
     }
     //客户端没断，走这里 
@@ -140,8 +144,11 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
         } 
         
         //cc_log_stderr(0,"连接被客户端 非 正常关闭！");
-
-        cc_close_connection(c);
+        if(close(c->fd) == -1)
+        {
+            cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::recvproc()中close_2(%d)失败!",c->fd);  
+        }
+        inRecyConnectQueue(c);
         return -1;
     }
 
@@ -151,12 +158,12 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
 
 
 //包头收完整后的处理，我们称为包处理阶段1【p1】：写成函数，方便复用
-void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t c)
+void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn)
 {
     CMemory *p_memory = CMemory::GetInstance();		
 
     LPCOMM_PKG_HEADER pPkgHeader;
-    pPkgHeader = (LPCOMM_PKG_HEADER)c->dataHeadInfo; //正好收到包头时，包头信息肯定是在dataHeadInfo里；
+    pPkgHeader = (LPCOMM_PKG_HEADER)pConn->dataHeadInfo; //正好收到包头时，包头信息肯定是在dataHeadInfo里；
 
     unsigned short e_pkgLen; 
     e_pkgLen = ntohs(pPkgHeader->pkgLen);  //注意这里网络序转本机序，所有传输到网络上的2字节数据，都要用htons()转成网络序，所有从网络上收到的2字节数据，都要用ntohs()转成本机序
@@ -167,30 +174,30 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t c)
         //伪造包/或者包错误
         //报文总长度 < 包头长度，认定非法用户，废包
         //状态和接收位置都复原，这些值都有必要，因为有可能在其他状态比如_PKG_HD_RECVING状态调用这个函数；
-        c->curStat = _PKG_HD_INIT;      
-        c->precvbuf = c->dataHeadInfo;
-        c->irecvlen = m_iLenPkgHeader;
+        pConn->curStat = _PKG_HD_INIT;      
+        pConn->precvbuf = pConn->dataHeadInfo;
+        pConn->irecvlen = m_iLenPkgHeader;
     }
     else if(e_pkgLen > (_PKG_MAX_LENGTH-1000))   //客户端发来包居然说包长度 > 29000?肯定是恶意包
     {
         //恶意包，太大，认定非法用户，废包【包头中说这个包总长度这么大，这不行】
         //状态和接收位置都复原，这些值都有必要，因为有可能在其他状态比如_PKG_HD_RECVING状态调用这个函数；
-        c->curStat = _PKG_HD_INIT;
-        c->precvbuf = c->dataHeadInfo;
-        c->irecvlen = m_iLenPkgHeader;
+        pConn->curStat = _PKG_HD_INIT;
+        pConn->precvbuf = pConn->dataHeadInfo;
+        pConn->irecvlen = m_iLenPkgHeader;
     }
     else
     {
         //合法的包头，继续处理
         //我现在要分配内存开始收包体，因为包体长度并不是固定的，所以内存肯定要new出来；
         char *pTmpBuffer  = (char *)p_memory->AllocMemory(m_iLenMsgHeader + e_pkgLen,false); //分配内存【长度是 消息头长度  + 包头长度 + 包体长度】，最后参数先给false，表示内存不需要memset;
-        c->ifnewrecvMem   = true;        //标记我们new了内存，将来在cc_free_connection()要回收的
-        c->pnewMemPointer = pTmpBuffer;  //内存开始指针
+        //pConn->ifnewrecvMem   = true;        //标记我们new了内存，将来在cc_free_connection()要回收的
+        pConn->precvMemPointer = pTmpBuffer;  //内存开始指针
 
         //a)先填写消息头内容
         LPSTRUC_MSG_HEADER ptmpMsgHeader = (LPSTRUC_MSG_HEADER)pTmpBuffer;
-        ptmpMsgHeader->pConn = c;
-        ptmpMsgHeader->iCurrsequence = c->iCurrsequence; //收到包时的连接池中连接序号记录到消息头里来，以备将来用；
+        ptmpMsgHeader->pConn = pConn;
+        ptmpMsgHeader->iCurrsequence = pConn->iCurrsequence; //收到包时的连接池中连接序号记录到消息头里来，以备将来用；
         //b)再填写包头内容
         pTmpBuffer += m_iLenMsgHeader;                 //往后跳，跳过消息头，指向包头
         memcpy(pTmpBuffer,pPkgHeader,m_iLenPkgHeader); //直接把收到的包头拷贝进来
@@ -198,14 +205,14 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t c)
         {
             //该报文只有包头无包体【我们允许一个包只有包头，没有包体】
             //这相当于收完整了，则直接入消息队列待后续业务逻辑线程去处理吧
-            cc_wait_request_handler_proc_plast(c);
+            cc_wait_request_handler_proc_plast(pConn);
         } 
         else
         {
             //开始收包体，注意我的写法
-            c->curStat = _PKG_BD_INIT;                   //当前状态发生改变，包头刚好收完，准备接收包体	    
-            c->precvbuf = pTmpBuffer + m_iLenPkgHeader;  //pTmpBuffer指向包头，这里 + m_iLenPkgHeader后指向包体 weizhi
-            c->irecvlen = e_pkgLen - m_iLenPkgHeader;    //e_pkgLen是整个包【包头+包体】大小，-m_iLenPkgHeader【包头】  = 包体
+            pConn->curStat = _PKG_BD_INIT;                   //当前状态发生改变，包头刚好收完，准备接收包体	    
+            pConn->precvbuf = pTmpBuffer + m_iLenPkgHeader;  //pTmpBuffer指向包头，这里 + m_iLenPkgHeader后指向包体 weizhi
+            pConn->irecvlen = e_pkgLen - m_iLenPkgHeader;    //e_pkgLen是整个包【包头+包体】大小，-m_iLenPkgHeader【包头】  = 包体
         }                       
     }  //end if(e_pkgLen < m_iLenPkgHeader) 
 
@@ -213,19 +220,57 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t c)
 }
 
 //收到一个完整包后的处理【plast表示最后阶段】，放到一个函数中，方便调用
-void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t c)
+void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t pConn)
 {
     //把这段内存放到消息队列中来；
-    g_threadpool.inMsgRecvQueueAndSingal(c->pnewMemPointer);
+    g_threadpool.inMsgRecvQueueAndSingal(pConn->precvMemPointer);
     
-    c->ifnewrecvMem    = false;            //内存不再需要释放，因为你收完整了包，这个包被上边调用inMsgRecvQueue()移入消息队列，那么释放内存就属于业务逻辑去干，不需要回收连接到连接池中干了
-    c->pnewMemPointer  = NULL;
-    c->curStat         = _PKG_HD_INIT;     //收包状态机的状态恢复为原始态，为收下一个包做准备                    
-    c->precvbuf        = c->dataHeadInfo;  //设置好收包的位置
-    c->irecvlen        = m_iLenPkgHeader;  //设置好要接收数据的大小
+   // c->ifnewrecvMem    = false;            //内存不再需要释放，因为你收完整了包，这个包被上边调用inMsgRecvQueue()移入消息队列，那么释放内存就属于业务逻辑去干，不需要回收连接到连接池中干了
+    pConn->precvMemPointer  = NULL;
+    pConn->curStat         = _PKG_HD_INIT;     //收包状态机的状态恢复为原始态，为收下一个包做准备                    
+    pConn->precvbuf        = pConn->dataHeadInfo;  //设置好收包的位置
+    pConn->irecvlen        = m_iLenPkgHeader;  //设置好要接收数据的大小
     return;
 }
 
+//发送数据专用函数，返回本次发送的字节数
+//返回 > 0，成功发送了一些字节
+//=0，估计对方断了
+//-1，errno == EAGAIN ，本方发送缓冲区满了
+//-2，errno != EAGAIN != EWOULDBLOCK != EINTR ，一般我认为都是对端断开的错误
+ssize_t CSocket::sendproc(lpcc_connection_t c,char *buff,ssize_t size)  //ssize_t是有符号整型，在32位机器上等同与int，在64位机器上等同与long int，size_t就是无符号型的ssize_t
+{
+    ssize_t n;
+
+    for(;;)
+    {
+        n = send(c->fd,buff,size,0);
+        if(n>0){
+             return n; //返回本次发送的字节数
+        }
+        if(n==0){//send=0表示超时，对方主动关闭了连接过程
+            return 0;
+        }
+         if(errno == EAGAIN)  //这东西应该等于EWOULDBLOCK
+        {
+            //内核缓冲区满，这个不算错误
+            return -1;  //表示发送缓冲区满了
+        }
+
+        if(errno == EINTR) 
+        {
+            //这个应该也不算错误 ，收到某个信号导致send产生这个错误？
+            //参考官方的写法，打印个日志，其他啥也没干，那就是等下次for循环重新send试一次了
+            cc_log_stderr(errno,"CSocekt::sendproc()中send()失败.");  //打印个日志看看啥时候出这个错误
+            //其他不需要做什么，等下次for循环吧            
+        }
+        else
+        {
+            //走到这里表示是其他错误码，都表示错误，错误我也不断开socket，我也依然等待recv()来统一处理断开，因为我是多线程，send()也处理断开，recv()也处理断开，很难处理好
+            return -2;    
+        }
+    }
+}
 //---------------------------------------------------------------
 //当收到一个完整包之后，将完整包入消息队列，这个包在服务器端应该是 消息头+包头+包体 格式
 //参数：返回 接收消息队列当前信息数量irmqc，因为临界着，所以这个值也是OK的；
