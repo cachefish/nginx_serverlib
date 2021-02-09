@@ -28,7 +28,7 @@
 #include "c_crc32.h"
 #include "c_slogic.h"  
 #include "c_logiccomm.h"  
-
+#include"c_lockmutex.h"
 //定义成员函数指针
 typedef bool (CLogicSocket::*handler)(  lpcc_connection_t pConn,      //连接池中连接的指针
                                         LPSTRUC_MSG_HEADER pMsgHeader,  //消息头指针
@@ -76,7 +76,7 @@ bool CLogicSocket::Initialize()
     return bParentInit;
 }
 
-//处理收到的数据包
+//处理收到的数据包   由线程池来调用本函数
 //pMsgBuf：消息头 + 包头 + 包体 ：自解释；
 void CLogicSocket::threadRecvProcFunc(char *pMsgBuf)
 {          
@@ -142,6 +142,50 @@ void CLogicSocket::threadRecvProcFunc(char *pMsgBuf)
 //处理各种业务逻辑
 bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pMsgHeader,char *pPkgBody,unsigned short iBodyLength)
 {
+    //判断包体合法性
+    if(pPkgBody == NULL){
+        return false;
+    }
+
+    int iRecvLen = sizeof(STRUCT_REGISTER);
+    if(iRecvLen != iBodyLength){ //发送过来的结构大小不对，认为是恶意包，直接不处理
+        return false;
+    }
+
+   //针对某个用户的多条命令，进行互斥处理
+   CLock lcok(&pConn->logicPorcMutex);
+   LPSTRUCT_REGISTER p_RecvInfo  = (LPSTRUCT_REGISTER)pPkgBody;
+
+   //通过pPkgBody中结构数据跟数据库中的数据进行验证，从而进行登录验证
+   //这些都是业务逻辑
+
+   //给客户端返回数据
+   //一般也是返回一个结构，这个协议内容具体由客户端/服务器协商
+   //这里给客户端也返回同样的 STRUCT_REGISTER 
+    LPCOMM_PKG_HEADER pPkgHeader;
+    CMemory *p_memory = CMemory::GetInstance();
+    CCRC32 *p_crc32 = CCRC32::GetInstance();
+    int iSendLen = sizeof(STRUCT_REGISTER);
+
+    //分配发送包的内存
+    char *p_sendbuf = (char*)p_memory->AllocMemory(m_iLenMsgHeader+m_iLenPkgHeader+iSendLen,false);
+    //填充消息头
+    memcpy(p_sendbuf,pMsgHeader,m_iLenMsgHeader);
+    //填充包头
+    pPkgHeader = (LPCOMM_PKG_HEADER)(p_sendbuf + m_iLenMsgHeader);
+    pPkgHeader->msgCode = _CMD_REGISTER;
+    pPkgHeader->msgCode = htons(pPkgHeader->msgCode);
+    pPkgHeader->pkgLen = htons(m_iLenMsgHeader+iSendLen);
+
+    //填充包体
+    LPSTRUCT_REGISTER psenInfo = (LPSTRUCT_REGISTER)(p_sendbuf+m_iLenMsgHeader+m_iLenPkgHeader);//跳过消息头，跳过包头
+
+    //e)包体内容全部确定好后，计算包体的crc32值
+    pPkgHeader->crc32 = p_crc32->Get_CRC((unsigned char *)p_sendbuf,iSendLen);
+    pPkgHeader->crc32 = htonl(pPkgHeader->crc32);
+
+
+
     cc_log_stderr(0,"执行了CLogicSocket::_HandleRegister()!");
     return true;
 }
