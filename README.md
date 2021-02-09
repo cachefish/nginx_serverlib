@@ -87,8 +87,9 @@ struct cc_connection_s
 
 
 # 程序运行流程
-
-    //(i)cc_master_process_cycle()        //创建子进程等一系列动作
+// master process ./test.exe
+	// worker process
+	//(i)cc_master_process_cycle()        //创建子进程等一系列动作
 	//(i)    cc_setproctitle()            //设置进程标题    
 	//(i)    cc_start_worker_processes()  //创建worker子进程   
 	//(i)        for (i = 0; i < threadnums; i++)   //master进程在走这个循环，来创建若干个子进程
@@ -99,17 +100,21 @@ struct cc_connection_s
 	//(i)                    cc_worker_process_init();
 	//(i)                        sigemptyset(&set);  
 	//(i)                        sigprocmask(SIG_SETMASK, &set, NULL); //允许接收所有信号
+	//(i)                        g_threadpool.Create(tmpthreadnums);  //创建线程池中线程
+	//(i)                        _socket.Initialize_subproc();  //初始化子进程需要具备的一些多线程能力相关的信息
 	//(i)                        g_socket.cc_epoll_init();  //初始化epoll相关内容，同时 往监听socket上增加监听事件，从而开始让监听端口履行其职责
 	//(i)                            m_epollhandle = epoll_create(m_worker_connections); 
 	//(i)                            cc_epoll_add_event((*pos)->fd....);
 	//(i)                                epoll_ctl(m_epollhandle,eventtype,fd,&ev);
 	//(i)                    cc_setproctitle(pprocname);          //重新为子进程设置标题为worker process
-	//(i)                    for ( ;; ) 
-    //(i)                    {
-	//(i)                        //子进程开始在这里不断的死循环
-	//(i)                        cc_process_events_and_timers(); //处理网络事件和定时器事件
+	//(i)                    for ( ;; ) {
+	//(i)                        cc_process_events_and_timers(); //处理网络事件和定时器事件 
 	//(i)                            g_socket.cc_epoll_process_events(-1); //-1表示卡着等待吧
-    //(i)                    }
+	//(i)                                epoll_wait();
+	//(i)                    }. ....                   //子进程开始在这里不断的死循环
+	//(i)                    g_threadpool.StopAll();      //考虑在这里停止线程池；
+	//(i)					 g_socket.Shutdown_subproc(); //socket需要释放的东西考虑释放；	
 
 	//(i)    sigemptyset(&set); 
-	//(i)    for ( ;; ) {}.                //父进程[master进程]会一直在这里循环
+	//(i)    for ( ;; ) {}.                //父进程[master进程]会一直在这里循环	
+	
