@@ -191,6 +191,7 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
 
     //如果从这个循环跳出来，考虑在这里停止线程池；
     g_threadpool.StopAll(); 
+    g_socket.Shutdown_subproc();
 
     return;
 }
@@ -215,6 +216,9 @@ static void cc_worker_process_init(int inum)
         exit(-2);
     }
     sleep(1); //再休息1秒；
+    if(g_socket.Initialize_subproc()==false){
+        exit(-2);
+    }
     
     //如下这些代码参照官方nginx里的cc_event_process_init()函数中的代码
     g_socket.cc_epoll_init();           //初始化epoll相关内容，同时 往监听socket上增加监听事件，从而开始让监听端口履行其职责
