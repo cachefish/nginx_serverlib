@@ -13,6 +13,8 @@
 
     开始少加了m_iLenPkgHeader，导致指针指向有问题
     
+    c_socket.cpp              ev.data.ptr = (void *)pConn在EPOLL_CTL_ADD中添加，但第二次客户端给服务器发消息不知道怎么回事，会出现ptr失效，故在最后再将指针指向
+    
 
 
 
