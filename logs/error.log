@@ -386,3 +386,69 @@
 
 2021/02/07 17:14:13 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
 
+2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGHUP) succed!
+
+2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGINT) succed!
+
+2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGTERM) succed!
+
+2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGCHLD) succed!
+
+2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGQUIT) succed!
+
+2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGIO) succed!
+
+2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGSYS,SIG_IGN) succed!
+
+2021/02/09 16:23:10 [info] 83661: 监听80端口成功！
+2021/02/09 16:23:10 [info] 83661: 监听443端口成功！
+2021/02/09 16:23:10 [notice] 83662: master process ./test.exe 83662 【master进程】启动并开始运行......!
+2021/02/09 16:23:11 [notice] 83663: worker process 83663 【worker进程】启动并开始运行......!
+2021/02/09 16:23:14 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:23:14 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:23:18 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:23:18 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:23:21 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:23:21 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:23:26 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:23:26 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:23:27 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:23:27 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:23:29 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:23:29 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:24:45 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:24:45 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:24:48 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:24:48 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:24:49 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:24:49 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:24:51 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:24:51 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:24:52 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:24:52 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
+2021/02/09 16:24:54 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+
+2021/02/09 16:24:54 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+
