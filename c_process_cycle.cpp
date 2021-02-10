@@ -26,8 +26,7 @@ void cc_master_process_cycle()
 
     sigemptyset(&set);   //清空信号集
 
-    //下列这些信号在执行本函数期间不希望收到【考虑到官方nginx中有这些信号，老师就都搬过来了】（保护不希望由信号中断的代码临界区）
-    //建议fork()子进程时学习这种写法，防止信号的干扰；
+    //下列这些信号在执行本函数期间不希望收到,保护不希望由信号中断的代码临界区）
     sigaddset(&set, SIGCHLD);     //子进程状态改变
     sigaddset(&set, SIGALRM);     //定时器超时
     sigaddset(&set, SIGIO);       //异步I/O
@@ -41,7 +40,6 @@ void cc_master_process_cycle()
     //.........可以根据开发的实际需要往其中添加其他要屏蔽的信号......
     
     //设置，此时无法接受的信号；阻塞期间，你发过来的上述信号，多个会被合并为一个，暂存着，等你放开信号屏蔽后才能收到这些信号。。。
-    //sigprocmask()在第三章第五节详细讲解过
     if (sigprocmask(SIG_BLOCK, &set, NULL) == -1) //第一个参数用了SIG_BLOCK表明设置 进程 新的信号屏蔽字 为 “当前信号屏蔽字 和 第二个参数指向的信号集的并集
     {        
         cc_log_error_core(CC_LOG_ALERT,errno,"cc_master_process_cycle()中sigprocmask()失败!");
@@ -189,7 +187,7 @@ static void cc_worker_process_cycle(int inum,const char *pprocname)
 
     } //end for(;;)
 
-    //如果从这个循环跳出来，考虑在这里停止线程池；
+    //如果从这个循环跳出来，在这里停止线程池；
     g_threadpool.StopAll(); 
     g_socket.Shutdown_subproc();
 
@@ -212,7 +210,6 @@ static void cc_worker_process_init(int inum)
     int tmpthreadnums = p_config->GetIntDefault("ProcMsgRecvWorkThreadCount",5); //处理接收到的消息的线程池中线程数量
     if(g_threadpool.Create(tmpthreadnums) == false)  //创建线程池中线程
     {
-        //内存没释放，但是简单粗暴退出；
         exit(-2);
     }
     sleep(1); //再休息1秒；
@@ -220,12 +217,9 @@ static void cc_worker_process_init(int inum)
         exit(-2);
     }
     
-    //如下这些代码参照官方nginx里的cc_event_process_init()函数中的代码
     g_socket.cc_epoll_init();           //初始化epoll相关内容，同时 往监听socket上增加监听事件，从而开始让监听端口履行其职责
     //g_socket.cc_epoll_listenportstart();//往监听socket上增加监听事件，从而开始让监听端口履行其职责【如果不加这行，虽然端口能连上，但不会触发cc_epoll_process_events()里边的epoll_wait()往下走】
     
     
-    //....将来再扩充代码
-    //....
     return;
 }
