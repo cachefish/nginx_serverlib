@@ -5,7 +5,6 @@
 #include"c_global.h"
 using std::vector;
 
-
 class CConfig
 {
     private:
@@ -42,8 +41,5 @@ class CConfig
         vector<LPCConfItem> m_ConfigItemList;   //存储配置信息的列表
     
 };
-
-
-
 
 #endif

@@ -5,14 +5,12 @@
 
 #include"c_func.h"
 #include"c_conf.h"
-
 using std::vector;
 
 CConfig *CConfig::m_instance = nullptr;
 
 //构造
 CConfig::CConfig(){}
-
 //析构函数
 CConfig::~CConfig()
 {
