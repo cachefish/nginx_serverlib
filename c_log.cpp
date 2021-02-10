@@ -1,5 +1,4 @@
-//和日志相关的函数放之类
-
+//和日志相关的函数之类
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,28 +36,17 @@ cc_log_t   cc_log;
 //描述：通过可变参数组合出字符串【支持...省略号形参】，自动往字符串最末尾增加换行符【所以调用者不用加\n】， 往标准错误上输出这个字符串；
 //     如果err不为0，表示有错误，会将该错误编号以及对应的错误信息一并放到组合出的字符串中一起显示；
 //调用格式比如：cc_log_stderr(0, "invalid option: \"%s\",%d", "testinfo",123);
- /* 
-    cc_log_stderr(0, "invalid option: \"%s\"", argv[0]);  //nginx: invalid option: "./nginx"
-    cc_log_stderr(0, "invalid option: %10d", 21);         //nginx: invalid option:         21  ---21前面有8个空格
-    cc_log_stderr(0, "invalid option: %.6f", 21.378);     //nginx: invalid option: 21.378000   ---%.这种只跟f配合有效，往末尾填充0
-    cc_log_stderr(0, "invalid option: %.6f", 12.999);     //nginx: invalid option: 12.999000
-    cc_log_stderr(0, "invalid option: %.2f", 12.999);     //nginx: invalid option: 13.00
-    cc_log_stderr(0, "invalid option: %xd", 1678);        //nginx: invalid option: 68E
-    cc_log_stderr(0, "invalid option: %Xd", 1678);        //nginx: invalid option: 68E
-    cc_log_stderr(15, "invalid option: %s , %d", "testInfo",326);        //nginx: invalid option: testInfo , 326
-    cc_log_stderr(0, "invalid option: %d", 1678); 
-    */
 void cc_log_stderr(int err, const char *fmt, ...)
 {    
     va_list args;                        //创建一个va_list类型变量
-    u_char  errstr[CC_MAX_ERROR_STR+1]; //2048  -- ************  +1是我自己填的，感谢官方写法有点小瑕疵，所以动手调整一下
+    u_char  errstr[CC_MAX_ERROR_STR+1]; //2048  
     u_char  *p,*last;
 
-    memset(errstr,0,sizeof(errstr));     //我个人加的，这块有必要加，至少在va_end处理之前有必要，否则字符串没有结束标记不行的；***************************
+    memset(errstr,0,sizeof(errstr));    
 
     last = errstr + CC_MAX_ERROR_STR;        //last指向整个buffer最后去了【指向最后一个有效位置的后面也就是非有效位】，作为一个标记，防止输出内容超过这么长,
                                                 
-    p = cc_cpymem(errstr, "cc: ", 4);     //p指向"nginx: "之后    
+    p = cc_cpymem(errstr, "cc: ", 4);     //p指向"cc: "之后    
     
     va_start(args, fmt); //使args指向起始的参数
     p = cc_vslprintf(p,last,fmt,args); //组合出这个字符串保存在errstr里
@@ -70,17 +58,14 @@ void cc_log_stderr(int err, const char *fmt, ...)
         p = cc_log_errno(p, last, err);
     }
     
-    //若位置不够，那换行也要硬插入到末尾，哪怕覆盖到其他内容
     if (p >= (last - 1))
     {
-        p = (last - 1) - 1; //把尾部空格留出来，这里感觉nginx处理的似乎就不对 
-                            
+        p = (last - 1) - 1; 
     }
     *p++ = '\n'; //增加个换行符    
 
     //往标准错误【一般是屏幕】输出信息    
-    write(STDERR_FILENO,errstr,p - errstr); //三章七节讲过，这个叫标准错误，一般指屏幕
-
+    write(STDERR_FILENO,errstr,p - errstr);
     if(cc_log.fd > STDERR_FILENO)
     {
         cc_log_error_core(CC_LOG_STDERR,err,(const char*)errstr);
@@ -167,11 +152,9 @@ void cc_log_error_core(int level,  int err, const char *fmt, ...)
         //错误代码和错误信息也要显示出来
         p = cc_log_errno(p, last, err);
     }
-    //若位置不够，那换行也要硬插入到末尾，哪怕覆盖到其他内容
     if (p >= (last - 1))
     {
-        p = (last - 1) - 1; //把尾部空格留出来，这里感觉nginx处理的似乎就不对 
-                             //我觉得，last-1，才是最后 一个而有效的内存，而这个位置要保存\0，所以我认为再减1，这个位置，才适合保存\n
+        p = (last - 1) - 1; 
     }
     *p++ = '\n'; //增加个换行符       
 
@@ -180,11 +163,9 @@ void cc_log_error_core(int level,  int err, const char *fmt, ...)
     {        
         if (level > cc_log.log_level) 
         {
-            //要打印的这个日志的等级太落后（等级数字太大，比配置文件中的数字大)
             //这种日志就不打印了
             break;
         }
-        //磁盘是否满了的判断，先算了吧，还是由管理员保证这个事情吧； 
 
         //写日志文件        
         n = write(cc_log.fd,errstr,p - errstr);  //文件写入成功后，如果中途
@@ -197,8 +178,7 @@ void cc_log_error_core(int level,  int err, const char *fmt, ...)
             }
             else
             {
-                //这是有其他错误，显示到标准错误设备吧；
-                if(cc_log.fd != STDERR_FILENO) //当前是定位到文件的，则条件成立
+                if(cc_log.fd != STDERR_FILENO) 
                 {
                     n = write(STDERR_FILENO,errstr,p - errstr);
                 }
@@ -221,7 +201,6 @@ void cc_log_init()
     plogname = (u_char *)p_config->getString("Log");
     if(plogname == NULL)
     {
-        //没读到，就要给个缺省的路径文件名了
         plogname = (u_char *) CC_ERROR_LOG_PATH; //"logs/error.log" ,logs目录需要提前建立出来
     }
     cc_log.log_level = p_config->GetIntDefault("LogLevel",CC_LOG_NOTICE);//缺省日志等级为6【注意】 ，如果读失败，就给缺省日志等级

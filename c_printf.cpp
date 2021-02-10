@@ -50,8 +50,7 @@ u_char * cc_snprintf(u_char *buf, size_t max, const char *fmt, ...)   //类print
        //args = "testinfo",123
 u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
 {
-    //比如说你要调用cc_log_stderr(0, "invalid option: \"%s\"", argv[i]);，那么这里的fmt就应该是:   invalid option: "%s"
-    //printf("fmt = %s\n",fmt);
+    //cc_log_stderr(0, "invalid option: \"%s\"", argv[i]);，那么这里的fmt就应该是:   invalid option: "%s"
     
     u_char     zero;
 
@@ -62,8 +61,7 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
         typedef unsigned int uintptr_t;
     #endif
     */
-    uintptr_t  width,sign,hex,frac_width,scale,n;  //临时用到的一些变量
-
+    uintptr_t  width,sign,hex,frac_width,scale,n; 
     int64_t    i64;   //保存%d对应的可变参
     uint64_t   ui64;  //保存%ud对应的可变参，临时作为%f可变参的整数部分也是可以的 
     u_char     *p;    //保存%s对应的可变参
@@ -73,10 +71,8 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
 
     while (*fmt && buf < last) //每次处理一个字符，处理的是  "invalid option: \"%s\",%d" 中的字符
     {
-        if (*fmt == '%')  //%开头的一般都是需要被可变参数 取代的 
+        if (*fmt == '%')  
         {
-            //-----------------变量初始化工作开始-----------------
-            //++fmt是先加后用，也就是fmt先往后走一个字节位置，然后再判断该位置的内容
             zero  = (u_char) ((*++fmt == '0') ? '0' : ' ');  //判断%后边接的是否是个'0',如果是zero = '0'，否则zero = ' '，一般比如你想显示10位，而实际数字7位，前头填充三个字符，就是这里的zero用于填充
                                                                 //cc_log_stderr(0, "数字是%010d", 12); 
                                                                 
@@ -87,10 +83,7 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
             i64 = 0;                                         //一般用%d对应的可变参中的实际数字，会保存在这里
             ui64 = 0;                                        //一般用%ud对应的可变参中的实际数字，会保存在这里    
             
-            //-----------------变量初始化工作结束-----------------
 
-            //这个while就是判断%后边是否是个数字，如果是个数字，就把这个数字取出来，比如%16，最终这个循环就能够把16取出来弄到width里边去
-            //%16d 这里最终width = 16;
             while (*fmt >= '0' && *fmt <= '9')  //如果%后边接的字符是 '0' --'9'之间的内容   ，比如  %16这种；   
             {
                 //第一次 ：width = 1;  第二次 width = 16，所以整个width = 16；
@@ -147,7 +140,7 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
                 {
                     ui64 = (uint64_t) va_arg(args, u_int);    
                 }
-                break;  //这break掉，直接跳道switch后边的代码去执行,这种凡是break的，都不做fmt++;  *********************【switch后仍旧需要进一步处理】
+                break;  
             case 'i':
                 if (sign) 
                 {
@@ -246,18 +239,11 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
                 fmt++;
                 continue;  //重新从while开始执行
 
-            //..................................
-            //................其他格式符，逐步完善
-            //..................................
-
             default:
                 *buf++ = *fmt++; //往下移动一个字符
                 continue; //注意这里不break，而是continue;而这个continue其实是continue到外层的while去了，也就是流程重新从while开头开始执行;
             } //end switch (*fmt) 
             
-            //显示%d的，会走下来，其他走下来的格式日后逐步完善......
-
-            //统一把显示的数字都保存到 ui64 里去；
             if (sign) //显示的是有符号数
             {
                 if (i64 < 0)  //这可能是和%d格式对应的要显示的数字
@@ -272,7 +258,6 @@ u_char *cc_vslprintf(u_char *buf, u_char *last,const char *fmt,va_list args)
             } //end if (sign) 
 
             //把一个数字 比如“1234567”弄到buffer中显示，如果是要求10位，则前边会填充3个空格比如“   1234567”
-            //注意第5个参数hex，是否以16进制显示，比如如果你是想以16进制显示一个数字则可以%Xd或者%xd，此时hex = 2或者1
             buf = cc_sprintf_num(buf, last, ui64, zero, hex, width); 
             fmt++;
         }
