@@ -3,6 +3,9 @@
     由一些事件发生源【三次握手内核通知，事件发生源就是客户端】，通过事件收集器来收集和分发事件【调用函数处理】
 	//【事件收集器：epoll_wait()函数】【cc_event_accept（），cc_wait_request_handler（）都属于事件处理器，用来消费事件】
 ``
+## epoll技术解析
+[epoll技术解析](https://github.com/cachefish/nginx_serverlib/blob/master/analysis/epoll%E6%8A%80%E6%9C%AF.md "epoll技术解析"),解析io多路复用epoll的函数与原理
+
 # conf   配置文件
 [配置文件详解](https://github.com/cachefish/nginx_serverlib/blob/master/analysis/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.md "配置文件"),用来通过接口查找配置信息
 ``` 
@@ -36,6 +39,9 @@ cc_log_error_core(CC_LOG_EMERG,errno,"sigaction(%s) filed",sig->signame);
 //设置守护进程
 cc_daemon();
 ```
+# 线程池
+[线程池](https://github.com/cachefish/nginx_serverlib/blob/master/analysis/%E7%BA%BF%E7%A8%8B%E6%B1%A0.md "线程池"),从池中去线程去处理数据，与消息队列相结合
+
 # 网络相关结构
 ```
 待改进
