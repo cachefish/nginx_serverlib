@@ -14,7 +14,7 @@
 	2. 功能：创建一个epoll对象，返回该对象的描述符【文件描述符】，这个描述符就代表这个epoll对象
 	    这个epoll对象最终要用close(),因为文件描述符/句柄 总是关闭的；
 	    size: >0;
-* __原理__ 
+__原理__ 
 1. struct eventpoll *ep = (struct eventpoll*)calloc(1, sizeof(struct eventpoll)); 
 2. rbr结构成员：代表一颗红黑树的根节点[刚开始指向空],把rbr理解成红黑树的根节点的指针；
 	红黑树，用来保存  键【数字】/值【结构】，能够快速的通过你给key，把整个的键/值取出来；
@@ -51,7 +51,8 @@
 	EPOLL_CTL_DEL：等价于从红黑树中删除节点
 	EPOLL_CTL_MOD：等价于修改已有的红黑树的节点
 
-* 当事件发生，我们如何拿到操作系统的通知  __epoll_wait()函数__
+* __epoll_wait()函数__
+    当事件发生，我们如何拿到操作系统的通知  
 	1. 格式：int epoll_wait(int epfd,struct epoll_event *events,int maxevents,int timeout);
 	2. 功能：阻塞一小段时间并等待事件发生，返回事件集合，也就是获取内核的事件通知；
 	 说白了就是遍历这个双向链表，把这个双向链表里边的节点数据拷贝出去，拷贝完毕的就从双向链表里移除；
