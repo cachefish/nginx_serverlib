@@ -37,14 +37,14 @@ __原理__
 	  EPOLL_CTL_DEL：是从红黑树上把这个节点干掉；这会导致这个socket【这个tcp链接】上无法收到任何系统通知事件；
 	__sockid__：表示客户端连接，就是你从accept()；这个是红黑树里边的key;
 	__event__：事件信息，这里包括的是 一些事件信息；EPOLL_CTL_ADD和EPOLL_CTL_MOD都要用到这个event参数里边的事件信息；
-	原理：
+	__原理__：
 	a. epi = (struct epitem*)calloc(1, sizeof(struct epitem));
 	b. epi = RB_INSERT(_epoll_rb_socket, &ep->rbr, epi); 【EPOLL_CTL_ADD】增加节点到红黑树中
 	  epitem.rbn ，代表三个指针，分别指向红黑树的左子树，右子树，父亲；
 	  epi = RB_REMOVE(_epoll_rb_socket, &ep->rbr, epi);【EPOLL_CTL_DEL】，从红黑树中把节点干掉
 	  EPOLL_CTL_MOD，找到红黑树节点，修改这个节点中的内容；
 
-	红黑树的节点是epoll_ctl[EPOLL_CTL_ADD]往里增加的节点；面试可能考
+	红黑树的节点是epoll_ctl[EPOLL_CTL_ADD]往里增加的节点；
 	红黑树的节点是epoll_ctl[EPOLL_CTL_DEL]删除的；
 	总结：
 	EPOLL_CTL_ADD：等价于往红黑树中增加节点
