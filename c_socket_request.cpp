@@ -22,7 +22,7 @@
 #include "c_lockmutex.h"  //自动释放互斥量的一个类
 
 //来数据时候的处理，当连接上有数据来的时候，本函数会被cc_epoll_process_events()所调用  ,官方的类似函数为cc_http_wait_request_handler();
-void CSocket::cc_wait_request_handler(lpcc_connection_t pConn)
+void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
 {  
     //收包，注意我们用的第二个和第三个参数，我们用的始终是这两个参数，因此我们必须保证 c->precvbuf指向正确的收包位置，保证c->irecvlen指向正确的收包宽度
     ssize_t reco = recvproc(pConn,pConn->precvbuf,pConn->irecvlen); 
@@ -240,18 +240,31 @@ void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t pConn)
 //-2，errno != EAGAIN != EWOULDBLOCK != EINTR ，一般我认为都是对端断开的错误
 ssize_t CSocket::sendproc(lpcc_connection_t c,char *buff,ssize_t size)  //ssize_t是有符号整型，在32位机器上等同与int，在64位机器上等同与long int，size_t就是无符号型的ssize_t
 {
-    ssize_t n;
+    //这里参考借鉴了官方nginx函数ngx_unix_send()的写法
+    ssize_t   n;
 
-    for(;;)
+    for ( ;; )
     {
-        n = send(c->fd,buff,size,0);
-        if(n>0){
-             return n; //返回本次发送的字节数
+        n = send(c->fd, buff, size, 0); //send()系统函数， 最后一个参数flag，一般为0； 
+        if(n > 0) //成功发送了一些数据
+        {        
+            //发送成功一些数据，但发送了多少，我们这里不关心，也不需要再次send
+            //这里有两种情况
+            //(1) n == size也就是想发送多少都发送成功了，这表示完全发完毕了
+            //(2) n < size 没发送完毕，那肯定是发送缓冲区满了，所以也不必要重试发送，直接返回吧
+            return n; //返回本次发送的字节数
         }
-        if(n==0){//send=0表示超时，对方主动关闭了连接过程
+
+        if(n == 0)
+        {
+            //send()返回0？ 一般recv()返回0表示断开,send()返回0，我这里就直接返回0吧【让调用者处理】；我个人认为send()返回0，要么你发送的字节是0，要么对端可能断开。
+            //网上找资料：send=0表示超时，对方主动关闭了连接过程
+            //我们写代码要遵循一个原则，连接断开，我们并不在send动作里处理诸如关闭socket这种动作，集中到recv那里处理，否则send,recv都处理都处理连接断开关闭socket则会乱套
+            //连接断开epoll会通知并且 recvproc()里会处理，不在这里处理
             return 0;
         }
-         if(errno == EAGAIN)  //这东西应该等于EWOULDBLOCK
+
+        if(errno == EAGAIN)  //这东西应该等于EWOULDBLOCK
         {
             //内核缓冲区满，这个不算错误
             return -1;  //表示发送缓冲区满了
@@ -269,7 +282,7 @@ ssize_t CSocket::sendproc(lpcc_connection_t c,char *buff,ssize_t size)  //ssize_
             //走到这里表示是其他错误码，都表示错误，错误我也不断开socket，我也依然等待recv()来统一处理断开，因为我是多线程，send()也处理断开，recv()也处理断开，很难处理好
             return -2;    
         }
-    }
+    } //end for
 }
 //---------------------------------------------------------------
 //当收到一个完整包之后，将完整包入消息队列，这个包在服务器端应该是 消息头+包头+包体 格式
@@ -301,6 +314,47 @@ ssize_t CSocket::sendproc(lpcc_connection_t c,char *buff,ssize_t size)  //ssize_
 //     return sTmpMsgBuf;                         
 // }
 
+
+//设置数据发送时的写处理函数,当数据可写时epoll通知我们，我们在 int CSocket::cc_epoll_process_events(int timer)  中调用此函数
+//能走到这里，数据就是没法送完毕，要继续发送
+void CSocket::cc_write_request_handler(lpcc_connection_t pConn)
+{
+    CMemory *p_memory = CMemory::GetInstance();
+    ssize_t sendsize = sendproc(pConn,pConn->psendbuf,pConn->isendlen);
+
+    if(sendsize > 0&&sendsize != pConn->isendlen){
+        //没有全部发送完毕，记录，然后返回
+        pConn->psendbuf = pConn->psendbuf + sendsize;
+        pConn->isendlen = pConn->isendlen-sendsize;
+        return;
+    }
+    else if(sendsize == -1){
+        //错误
+        cc_log_stderr(errno,"CSocket::cc_write_request_handler()中sendsize == -1,错误");
+        return;
+    }
+    if(sendsize > 0 && sendsize == pConn->isendlen) //成功发送完毕
+    {
+         if(cc_epoll_oper_event(pConn->fd,
+                                                    EPOLL_CTL_MOD,
+                                                    EPOLLOUT,
+                                                    1,
+                                                    pConn)==-1){
+            cc_log_stderr(errno,"CSocket::cc_write_request_handler()中cc_epoll_oper_event()失败");
+        }
+        cc_log_stderr(0,"CSocket::cc_write_request_handler()中数据发送完毕");
+    }
+   
+    //数据发送完毕，或者把需要发送的数据干掉，都说明发送缓冲区可能有地方了，让发送线程往下走判断能否发送新数据
+    if(sem_post(&m_semEventSendQueue)==-1)
+        cc_log_stderr(0,"CSocket::cc_write_request_handler()中的sem_post(&m_semEventSendQueue)失败");
+    
+    p_memory->FreeMemory(pConn->psendMemPointer);
+    pConn->psendMemPointer = NULL;
+    --pConn->iThrowsendCount;
+    return;
+
+}
 
 //消息处理线程主函数，专门处理各种接收到的TCP消息
 //pMsgBuf：发送过来的消息缓冲区，消息本身是自解释的，通过包头可以计算整个包长
