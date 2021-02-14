@@ -414,7 +414,7 @@ int CSocket::cc_epoll_oper_event( int                fd,               //句柄�
 
     if(eventtype == EPOLL_CTL_ADD)
     {
-        ev.data.ptr = (void*)pConn;
+        //ev.data.ptr = (void*)pConn;
         ev.events = flag;
         pConn->events = flag;
     }else if(eventtype == EPOLL_CTL_MOD){
