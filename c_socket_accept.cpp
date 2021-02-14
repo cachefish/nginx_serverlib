@@ -89,8 +89,8 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
 
             newc->listening = oldc->listening;                                                      //连接对象 和监听对象关联，方便通过连接对象找监听对象【关联到监听端口】
             //newc->w_ready = 1;                                                                                   //标记可以写，新连接写事件肯定是ready的
-            newc->rhandler = &CSocket::cc_wait_request_handler;         //设置数据来时的读处理函数
-
+            newc->rhandler = &CSocket::cc_read_request_handler;         //设置数据来时的读处理函数
+            newc->whandler = &CSocket::cc_write_request_handler;
 
             if(cc_epoll_oper_event(s,
                                                             EPOLL_CTL_ADD,EPOLLIN|EPOLLRDHUP,
