@@ -154,6 +154,7 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
 
    //针对某个用户的多条命令，进行互斥处理
    CLock lcok(&pConn->logicPorcMutex);
+    //取得了整个发送过来的数据
    LPSTRUCT_REGISTER p_RecvInfo  = (LPSTRUCT_REGISTER)pPkgBody;
 
    //通过pPkgBody中结构数据跟数据库中的数据进行验证，从而进行登录验证
@@ -167,6 +168,7 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
     CCRC32 *p_crc32 = CCRC32::GetInstance();
     int iSendLen = sizeof(STRUCT_REGISTER);
 
+iSendLen = 65000;
     //分配发送包的内存
     char *p_sendbuf = (char*)p_memory->AllocMemory(m_iLenMsgHeader+m_iLenPkgHeader+iSendLen,false);
     //填充消息头
@@ -184,10 +186,11 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
     pPkgHeader->crc32 = p_crc32->Get_CRC((unsigned char *)p_sendbuf,iSendLen);
     pPkgHeader->crc32 = htonl(pPkgHeader->crc32);
     //f)发送数据包
-    if(cc_epoll_oper_event(pConn->fd,EPOLL_CTL_MOD,EPOLLOUT,0,pConn)==-1){
-            cc_log_stderr(0,"1111111111111111111111111111111111111111111111111111111111111!");
+    msgSend(p_sendbuf);
+    // if(cc_epoll_oper_event(pConn->fd,EPOLL_CTL_MOD,EPOLLOUT,0,pConn)==-1){
+    //         cc_log_stderr(0,"1111111111111111111111111111111111111111111111111111111111111!");
 
-    }
+    // }
 
 
     cc_log_stderr(0,"执行了CLogicSocket::_HandleRegister()!");
