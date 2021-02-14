@@ -183,7 +183,11 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
     //e)包体内容全部确定好后，计算包体的crc32值
     pPkgHeader->crc32 = p_crc32->Get_CRC((unsigned char *)p_sendbuf,iSendLen);
     pPkgHeader->crc32 = htonl(pPkgHeader->crc32);
+    //f)发送数据包
+    if(cc_epoll_oper_event(pConn->fd,EPOLL_CTL_MOD,EPOLLOUT,0,pConn)==-1){
+            cc_log_stderr(0,"1111111111111111111111111111111111111111111111111111111111111!");
 
+    }
 
 
     cc_log_stderr(0,"执行了CLogicSocket::_HandleRegister()!");
