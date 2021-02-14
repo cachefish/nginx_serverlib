@@ -103,7 +103,15 @@ bool CSocket::Initialize_subproc()
     }
     //开始创建线程
     int err;
-    ThreadItem *pRecyconn= new ThreadItem(this);
+    ThreadItem *pSendQueue; //专门用来发送数据线程
+     m_threadVector.push_back(pSendQueue = new ThreadItem(this));
+     err = pthread_create(&pSendQueue->_Handle,NULL,ServerSendQueueThread,pSendQueue);
+     if(err != 0)
+    {
+        return false;
+    }
+
+    ThreadItem *pRecyconn= new ThreadItem(this);//专门用来回收连接的线程
     m_threadVector.push_back(pRecyconn );
     err = pthread_create(&pRecyconn->_Handle,NULL,ServerRecyConnectionThread,pRecyconn);
     if(err != 0)
@@ -116,6 +124,10 @@ bool CSocket::Initialize_subproc()
 //关闭退出函数[子进程中执行]
 void CSocket::Shutdown_subproc()
 {
+    if(sem_post(&m_semEventSendQueue)==-1){//让ServerSendQueueThread()流程走下来干活
+        cc_log_stderr(0,"CSocket::Shutdown_subproc()中sem_post(&m_semEventSendQueue)失败.");
+    }
+
     std::vector<ThreadItem*>::iterator iter;
     for(iter = m_threadVector.begin();iter != m_threadVector.end();++iter){
         pthread_join((*iter)->_Handle,NULL);
@@ -145,9 +157,9 @@ void CSocket::clearMsgSendQueue()
 {
     char * sTmpMempoint;
     CMemory *p_memory = CMemory::GetInstance();
-    while(!m_MsgRecvQueue.empty()){
-        sTmpMempoint = m_MsgRecvQueue.front();
-        m_MsgRecvQueue.pop_front();
+    while(!m_MsgSendQueue.empty()){
+        sTmpMempoint = m_MsgSendQueue.front();
+        m_MsgSendQueue.pop_front();
         p_memory->FreeMemory(sTmpMempoint);
     }
 }
@@ -283,7 +295,7 @@ void CSocket::cc_close_listening_sockets()
 void CSocket::msgSend(char *psendbuf)
 {
     CLock lock(&m_sendMessageQueueMutex);
-    m_MsgRecvQueue.push_back(psendbuf);
+    m_MsgSendQueue.push_back(psendbuf);
     ++m_iSendMsgQueueCount;
 
     if(sem_post(&m_semEventSendQueue)==-1)
@@ -406,7 +418,7 @@ int CSocket::cc_epoll_add_event(int fd,
 int CSocket::cc_epoll_oper_event( int                fd,               //句柄，一个socket
                         uint32_t           eventtype,        //事件类型，一般是EPOLL_CTL_ADD，EPOLL_CTL_MOD，EPOLL_CTL_DEL ，说白了就是操作epoll红黑树的节点(增加，修改，删除)
                         uint32_t           flag,             //标志，具体含义取决于eventtype
-                        int                bcaction,         //补充动作，用于补充flag标记的不足  :  0：增加   1：去掉
+                        int                bcaction,         //补充动作，用于补充flag标记的不足  :  0：增加   1：去掉 2：完全覆盖 
                         lpcc_connection_t pConn     )        //pConn：一个指针【其实是一个连接】，EPOLL_CTL_ADD时增加到红黑树中去，将来epoll_wait时能取出来用)
 {
     struct epoll_event ev;
@@ -483,11 +495,11 @@ int CSocket::cc_epoll_process_events(int timer)
 
 
     //有事件收到
-    lpcc_connection_t c;
+    lpcc_connection_t pConn;
   //  uintptr_t                     instance;
     uint32_t                     revents;
     for(int i =0;i<events;++i){         //遍历本次epoll_wait返回的所有事件，events才是返回的实际事件数量
-        c = (lpcc_connection_t)(m_events[i].data.ptr);      //将地址的最后一位取出来，用instance变量标识, 见cc_epoll_add_event，该值是当时随着连接池中的连接一起给进来的
+        pConn = (lpcc_connection_t)(m_events[i].data.ptr);      //将地址的最后一位取出来，用instance变量标识, 见cc_epoll_add_event，该值是当时随着连接池中的连接一起给进来的
        /* instance = (uintptr_t)c&1;
         c = (lpcc_connection_t)((uintptr_t)c&(uintptr_t)~1);//最后1位干掉，得到真正的c地址
 
@@ -509,13 +521,147 @@ int CSocket::cc_epoll_process_events(int timer)
 
 
         if(revents&EPOLLIN){                                        //如果是读事件
-            (this->*(c->rhandler))(c);                             //如果新连接进入，这里执行的应该是CSocekt::cc_event_accept(c)】
+            (this->*(pConn->rhandler))(pConn);                             //如果新连接进入，这里执行的应该是CSocekt::cc_event_accept(c)】
                                                                                             //如果是已经连入，发送数据到这里，则这里执行的应该是 CSocekt::cc_wait_request_handler   
         }
         if(revents&EPOLLOUT)                                      //如果是读事件
         {
-            //....待扩展
+            if(revents & (EPOLLERR | EPOLLHUP | EPOLLRDHUP))
+            {
+                --pConn->iThrowsendCount;
+            }else{
+                (this->*(pConn->whandler))(pConn);//如果有数据没有发送完毕，由系统驱动来发送，则这里执行的应该是 CSocket::cc_write_request_handler()
+            }
         }
     }
     return 1;
+}
+
+//--------------------------------------------------------------------
+//处理发送消息队列的线程
+
+void* CSocket::ServerSendQueueThread(void* threadData)
+{
+    ThreadItem *pThread = static_cast<ThreadItem*>(threadData);
+    CSocket*pSocketobj = pThread->_pThis;
+    int err;
+    std::list<char*>::iterator pos,pos2,posend;
+    
+    char *pMsgbuf;
+    LPSTRUC_MSG_HEADER pMsgHeader;
+    LPCOMM_PKG_HEADER   pPkgHeader;
+    lpcc_connection_t              p_Conn;
+    unsigned short                      itmp;
+    ssize_t                                        sendsize;
+
+    CMemory *p_memory = CMemory::GetInstance();
+
+    while(g_stopEvent == 0) //未退出
+    {
+        if(sem_wait(&pSocketobj->m_semEventSendQueue)==-1){
+            if(errno != EINTR){
+                cc_log_stderr(errno,"CSocket::ServerSendQueueThread()中sem_wait(&pSocketObj->m_semEventSendQueue)失败.");
+            }
+        }
+        if(g_stopEvent != 0){
+                break;
+        }
+        if(pSocketobj->m_iSendMsgQueueCount > 0){
+                err = pthread_mutex_lock(&pSocketobj->m_sendMessageQueueMutex);
+                if(err!=0) cc_log_stderr(err,"CSocket::ServerSendQueueThread()中pthread_mutex_lock()失败，返回的错误码为%d!",err);
+
+                pos = pSocketobj->m_MsgSendQueue.begin();
+                posend = pSocketobj->m_MsgSendQueue.end();
+
+                while (pos != posend)
+                {
+                    pMsgbuf = (*pos);
+                    pMsgHeader = (LPSTRUC_MSG_HEADER)pMsgbuf;
+                    pPkgHeader = (LPCOMM_PKG_HEADER)(pMsgbuf+pSocketobj->m_iLenMsgHeader);
+                    p_Conn = pMsgHeader->pConn;
+
+                    ////包过期，因为如果 这个连接被回收，比如在cc_close_connection(),inRecyConnectQueue()中都会自增iCurrsequence
+                     //而且这里有没必要针对 本连接 来用m_connectionMutex临界 ,只要下面条件成立，肯定是客户端连接已断，要发送的数据肯定不需要发送了
+                    if(p_Conn->iCurrsequence != pMsgHeader->iCurrsequence)
+                    {
+                        pos2 = pos;
+                        pos++;
+                        pSocketobj->m_MsgSendQueue.erase(pos2);
+                        --pSocketobj->m_iSendMsgQueueCount;
+                        p_memory->FreeMemory(pMsgbuf);
+                        continue;
+                    }
+                    if(p_Conn->iThrowsendCount > 0)
+                    {
+                        pos++;
+                        continue;
+                    }
+
+
+                    //开始发送消息
+                    p_Conn->psendMemPointer = pMsgbuf;
+                    pos2 = pos;
+                    pos++;
+                    pSocketobj->m_MsgSendQueue.erase(pos2);
+                    pSocketobj->m_iSendMsgQueueCount;
+                    p_Conn->psendbuf = (char *)pPkgHeader;
+                    itmp = ntohs(pPkgHeader->pkgLen);
+                    p_Conn->isendlen = itmp;
+
+
+                    //采用 epoll水平触发的策略，能走到这里的，都应该是还没有投递 写事件 到epoll中
+                    sendsize = pSocketobj->sendproc(p_Conn,p_Conn->psendbuf,p_Conn->isendlen);
+                    if(sendsize > 0){
+                        if(sendsize == p_Conn->isendlen ){
+                            p_memory->FreeMemory(p_Conn->psendMemPointer);
+                            p_Conn->psendMemPointer = NULL;
+                            p_Conn->iThrowsendCount = 0;    
+                            cc_log_stderr(0,"CSocket::ServerSendQueueThread()中数据发送完毕");
+                        }else{//没有全部发送完毕
+                            p_Conn->psendbuf = p_Conn->psendbuf + sendsize;
+                            p_Conn->isendlen = p_Conn->isendlen-sendsize;
+                            ++p_Conn->iThrowsendCount;
+                            if(pSocketobj->cc_epoll_oper_event(p_Conn->fd,EPOLL_CTL_MOD,EPOLLOUT,0,p_Conn)==-1)
+                            {
+                                    cc_log_stderr(errno,"CSocket::ServerSendQueueThread()cc_epoll_oper_event()失败.");
+                            }
+                            cc_log_stderr(errno,"CSock3t::ServerSendQueueThread()中数据没发送完毕【发送缓冲区满】，整个要发送%d，实际发送了%d。",p_Conn->isendlen,sendsize);
+                        }
+                        continue;
+                    }//end if(sendsize>0)
+                    else if(sendsize == 0){
+                        p_memory->FreeMemory(p_Conn->psendMemPointer);  //释放内存
+                        p_Conn->psendMemPointer = NULL;
+                        p_Conn->iThrowsendCount = 0;    
+                        continue;
+                    }
+                    else if(sendsize == -1){
+                    //发送缓冲区已经满了【一个字节都没发出去，说明发送 缓冲区当前正好是满的】
+                        ++p_Conn->iThrowsendCount;
+                        //标记发送缓冲区满了，需要通过epoll事件来驱动消息的继续发送
+                        if(pSocketobj->cc_epoll_oper_event(
+                                p_Conn->fd,         //socket句柄
+                                EPOLL_CTL_MOD,      //事件类型，这里是增加【因为我们准备增加个写通知】
+                                EPOLLOUT,           //标志，这里代表要增加的标志,EPOLLOUT：可写【可写的时候通知我】
+                                0,                  //对于事件类型为增加的，EPOLL_CTL_MOD需要这个参数, 0：增加   1：去掉 2：完全覆盖
+                                p_Conn              //连接池中的连接
+                                ) == -1)
+                        {
+                            cc_log_stderr(errno,"CSocket::ServerSendQueueThread()中cc_epoll_add_event()_2失败.");
+                        }
+                        continue;
+                    }
+                    else{
+                        //能走到这里的，应该就是返回值-2了，一般就认为对端断开了，等待recv()来做断开socket以及回收资源
+                        p_memory->FreeMemory(p_Conn->psendMemPointer);  //释放内存
+                        p_Conn->psendMemPointer = NULL;
+                        p_Conn->iThrowsendCount = 0;  
+                        continue;
+                    }
+                }//end while(pos != posend)
+                 err = pthread_mutex_unlock(&pSocketobj->m_sendMessageQueueMutex); 
+                if(err != 0)  cc_log_stderr(err,"CSocket::ServerSendQueueThread()pthread_mutex_unlock()失败，返回的错误码为%d!",err);
+            }//if(pSocketObj->m_iSendMsgQueueCount > 0)
+    }//end while
+    return (void*)0;
 }
