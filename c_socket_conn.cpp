@@ -223,8 +223,15 @@ lblRRTD:
             for(;pos!=posend;++pos){
                 p_Conn = (*pos);
                 if((p_Conn->inRecyTime + pSocketobj->m_RecyConnectionWaitTime)>currtime && (g_stopEvent == 0)){
-                    continue;
+                    continue;   //没有到释放时间
                 }
+                //只要到达释放时间,iThrowsendCount就=0
+                if(p_Conn->iThrowsendCount != 0){
+                        cc_log_stderr(0,"CSocket::ServerRecyConnectionThread()中到释放时间却发现p_Conn.iThrowsendCount!=0,不该发生");
+
+                }
+
+
                 --pSocketobj->m_total_recyconnection_n;
                 pSocketobj->m_recyconnectionList.erase(pos);
 
