@@ -70,7 +70,7 @@ struct cc_connection_s
     //发包相关
     std::atomic<int>                iThrowsendCount;                                        //发送消息，如果发送缓冲区满了，则需要通过epoll事件来驱动消息的继续发送，所以如果发送缓冲区满，则用这个变量标记
     char                                        *psendMemPointer;                                       //发送完后释放用的，整个数据的头指针，其实是 消息头 + 包头 + 包体
-    char                                        *psendbuf;                                                        //发送数据的缓冲区
+    char                                        *psendbuf;                                                        //发送数据的缓冲区的头指针，指向　包头＋包体
     unsigned int                        isendlen;                                                            //要发送多少数据
 
     //回收相关
@@ -134,7 +134,8 @@ class CSocket
     
         //业务处理函数handler
         void cc_event_accept(lpcc_connection_t oldc);                                          //建立新连接
-        void cc_wait_request_handler(lpcc_connection_t pConn);                              //设置数据来时的读处理函数
+        void cc_read_request_handler(lpcc_connection_t pConn);                              //设置数据来时的读处理函数
+        void cc_write_request_handler(lpcc_connection_t pConn);                             //设置数据发送时的写处理函数
         void cc_close_connection(lpcc_connection_t pConn);                  //用户连入，我们accept4()时，得到的socket在处理中产生失败，则资源用这个函数释放
         
         //数据处理函数
@@ -160,6 +161,8 @@ class CSocket
         void cc_free_connection(lpcc_connection_t c);                                             //归还参数c所代表的连接到到连接池中
         void inRecyConnectQueue(lpcc_connection_t pConn);                             //将要回收的连接放到一个队列中来
     
+        //线程相关函数
+        static void* ServerSendQueueThread(void *threadData);                         //专门用来发送消息的线程
         static void* ServerRecyConnectionThread(void *threadData);               //专门用来回收连接的线程
     protected:
         //网络通讯
@@ -200,7 +203,7 @@ class CSocket
 
 
 	    // //消息队列
-	    std::list<char *>                                                 m_MsgRecvQueue;                     //接收数据消息队列 
+	    std::list<char *>                                                 m_MsgSendQueue;                        //发送数据消息队列
         std::atomic<int>                                               m_iSendMsgQueueCount;
 
         //线程
