@@ -8,6 +8,7 @@
 #include<pthread.h>
 #include<semaphore.h>       //信号量
 #include<atomic>
+#include<map>
 #include"c_comm.h"
 
 //宏定义
@@ -75,7 +76,8 @@ struct cc_connection_s
 
     //回收相关
     time_t                                  inRecyTime;                                                    //入到资源回收站里去的时间
-
+    //和心跳包有关
+	time_t                    lastPingTime;                   //上次ping的时间【上次发送心跳包的事件】
 
 	//-----------------------------------------------------------------------------------------
 	lpcc_connection_t        next;           //这是个指针【等价于传统链表里的next成员：后继指针】，指向下一个本类型对象，用于把空闲的连接池对象串起来构成一个单向链表，
@@ -113,7 +115,8 @@ class CSocket
     public: 
         //char*outMsgRecvQueue();                                                             //将一个消息出消息队列
         virtual void threadRecvProcFunc(char *pMsgBuf);             //处理客户端请求，虚函数，因为将来可以考虑自己来写子类继承本类
-
+        //心跳包检测
+	    virtual void procPingTimeOutChecking(LPSTRUC_MSG_HEADER tmpmsg,time_t cur_time);
     public:
         int cc_epoll_init();                                                 //epoll功能初始化
        // int cc_epoll_add_event(int fd,int readevent,int wrireevent,uint32_t otherflag,uint32_t eventtype,lpcc_connection_t c);//epoll增加事件
@@ -122,8 +125,9 @@ class CSocket
         int cc_epoll_oper_event(int fd,uint32_t eventtype,uint32_t flag,int bcaction,lpcc_connection_t pConn);
 
     protected:
+        //数据发送相关
         void msgSend(char *psendbuf);
-
+        void ActClosesocketProc(lpcc_connection_t p_Conn);//主动关闭一个连接时的善后的处理函数
 
     private:
         void ReadConf();                                                                                                        //读网络配置项
@@ -154,21 +158,30 @@ class CSocket
         size_t cc_sock_ntop(struct sockaddr *sa,int port,u_char *text,size_t len);
 
         //连接池  连接 相关
-        void initconnection();
-        void clearconnection();
-
+        void initconnection();                                                                                                  //初始化连接池
+        void clearconnection();                                                                                               //回收连接池
         lpcc_connection_t cc_get_connection(int isock);                                         //从连接池中获取一个空闲连接
         void cc_free_connection(lpcc_connection_t c);                                             //归还参数c所代表的连接到到连接池中
         void inRecyConnectQueue(lpcc_connection_t pConn);                             //将要回收的连接放到一个队列中来
     
+        //时间相关
+        void AddToTimerQueue(lpcc_connection_t pConn);                                    //设置踢出时钟(向map表中增加内容)
+        time_t GetEarliestTime();                                                                                         //从multimap中取得最早的时间返回去
+        LPSTRUC_MSG_HEADER RemoveFirstTimer();                                              //从m_timeQueuemap移除最早的时间，并把最早这个时间所在的项的值所对应的指针 返回
+        LPSTRUC_MSG_HEADER GetOverTimeTimer(time_t cur_time);           //根据给的当前时间，从m_timeQueuemap找到比这个时间更早的节点【1个】返回去，这些节点都是时间超过了，要处理的节点
+        void DeleteFromTimerQueue(lpcc_connection_t pConn);                       //把指定用户tcp连接从timer表中找出去
+        void clearAllFromTimerQueue();                                                                          //清理时间队列中所有内容
+
         //线程相关函数
         static void* ServerSendQueueThread(void *threadData);                         //专门用来发送消息的线程
         static void* ServerRecyConnectionThread(void *threadData);               //专门用来回收连接的线程
+        static void* ServerTimerQueueMonitorThread(void *threadData);         //时间队列监视线程，处理到期不发心跳包的用户踢出的线程
+
     protected:
         //网络通讯
         size_t                         m_iLenPkgHeader;                    //sizeof(COMM_PKG_HEADER);		
 	    size_t                         m_iLenMsgHeader;                    //sizeof(STRUC_MSG_HEADER);
-
+        int                               m_iWaitTime;                           //多少秒检测一次是否 心跳超时，只有当Sock_WaitTimeEnable = 1时，本项才有用
     private:
         struct ThreadItem{
             pthread_t _Handle;
@@ -209,8 +222,14 @@ class CSocket
         //线程
         std::vector<ThreadItem *>                           m_threadVector;                             //线程 容器
         pthread_mutex_t                                             m_sendMessageQueueMutex;        //发消息队列互斥量
-        sem_t                                                                     m_semEventSendQueue;                  //处理发消息线程相关的信号量 
+        sem_t                                                                     m_semEventSendQueue;                  //处理发消息线程相关的信号量
 
+        //时间相关
+        int                                                                             m_ifkickTimeCount;                      //是否开启踢人时钟，1：开启   0：不开启
+        pthread_mutex_t                                               m_timerqueueMutex;                    //和时间队列有关的互斥量
+        std::multimap<time_t,LPSTRUC_MSG_HEADER> m_timerQueuemap;  //时间队列
+        size_t                                                                       m_cur_size_;                                       //时间队列的尺寸
+        time_t                                                                     m_timer_value_;                              //当前计时队列头部时间值
 };
 
 

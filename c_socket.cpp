@@ -30,7 +30,9 @@ m_RecyConnectionWaitTime(60),
 m_iLenPkgHeader(sizeof(COMM_PKG_HEADER)),
 m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER)),
 m_iSendMsgQueueCount(0),
-m_total_recyconnection_n(0)
+m_total_recyconnection_n(0),
+m_cur_size_(0),
+m_timer_value_(0)
 {   
     
 }
@@ -95,6 +97,12 @@ bool CSocket::Initialize_subproc()
         cc_log_stderr(0,"CSocket::initial_subproc()中的pthread_mutex_init()函数失败");
         return false;
     }
+    //时间处理互斥量
+    if(pthread_mutex_init(&m_timerqueueMutex,NULL) != 0)
+    {
+        cc_log_stderr(0,"CSocket::initial_subproc()中的pthread_mutex_init()函数失败");
+        return false;
+    }
     //信号量初始化
     if(sem_init(&m_semEventSendQueue,0,0)==-1)
     {
@@ -108,6 +116,7 @@ bool CSocket::Initialize_subproc()
      err = pthread_create(&pSendQueue->_Handle,NULL,ServerSendQueueThread,pSendQueue);
      if(err != 0)
     {
+        cc_log_stderr(0,"CSocket::Initialize_subproc()中pthread_create(ServerSendQueueThread)失败.");
         return false;
     }
 
@@ -116,7 +125,20 @@ bool CSocket::Initialize_subproc()
     err = pthread_create(&pRecyconn->_Handle,NULL,ServerRecyConnectionThread,pRecyconn);
     if(err != 0)
     {
+            cc_log_stderr(0,"CSocket::Initialize_subproc()中pthread_create(ServerRecyConnectionThread)失败.");
         return false;
+    }
+
+    if(m_ifkickTimeCount == 1)  //是否开启踢人时钟
+    {
+        ThreadItem *pTimemonitor;
+        m_threadVector.push_back(pTimemonitor = new ThreadItem(this));
+        err = pthread_create(&pTimemonitor->_Handle,NULL,ServerTimerQueueMonitorThread,pTimemonitor);
+        if(err != 0)
+        {
+            cc_log_stderr(0,"CSocket::Initialize_subproc()中pthread_create(ServerTimerQueueMonitorThread)失败.");
+            return false;
+        }
     }
     return true;
 
@@ -144,11 +166,12 @@ void CSocket::Shutdown_subproc()
     //队列相关
     clearMsgSendQueue();
     clearconnection();
-
+    clearAllFromTimerQueue();
     //多线程相关
     pthread_mutex_destroy(&m_connectionMutex);
     pthread_mutex_destroy(&m_sendMessageQueueMutex);
     pthread_mutex_destroy(&m_recyconnqueueMutex);
+    pthread_mutex_destroy(&m_timerqueueMutex);
     sem_destroy(&m_semEventSendQueue);
 }
 
@@ -171,6 +194,9 @@ void CSocket::ReadConf()
     m_worker_connections = p_config->GetIntDefault("worker_connections",m_worker_connections);
     m_ListenPortCount          = p_config->GetIntDefault("ListenPortCount",m_ListenPortCount);
     m_RecyConnectionWaitTime = p_config->GetIntDefault("Sock_RecyConnectionWaitTime",m_RecyConnectionWaitTime);
+    m_ifkickTimeCount         = p_config->GetIntDefault("Sock_WaitTimeEnable",0);                                //是否开启踢人时钟，1：开启   0：不开启
+	m_iWaitTime               = p_config->GetIntDefault("Sock_MaxWaitTime",m_iWaitTime);                         //多少秒检测一次是否 心跳超时，只有当Sock_WaitTimeEnable = 1时，本项才有用	
+	m_iWaitTime               = (m_iWaitTime > 5)?m_iWaitTime:5;
     return;
 }
 
@@ -305,6 +331,24 @@ void CSocket::msgSend(char *psendbuf)
     return;
 }
 
+//主动关闭一个连接时的要做些善后的处理函数
+void CSocket::ActClosesocketProc(lpcc_connection_t p_Conn)
+{
+    if(m_ifkickTimeCount == 1){
+        DeleteFromTimerQueue(p_Conn);   //从时间队列中将连接干掉
+    }
+    if(p_Conn->fd == -1)
+    {
+        close(p_Conn->fd);
+        p_Conn->fd = -1;
+    }
+    if(p_Conn->iThrowsendCount > 0)
+    {
+        --p_Conn->iThrowsendCount;
+    }
+    inRecyConnectQueue(p_Conn);
+    return;
+}
 
 int CSocket::cc_epoll_init()
 {
