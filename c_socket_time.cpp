@@ -158,6 +158,12 @@ void* CSocket::ServerTimerQueueMonitorThread(void* threadData)
                 LPSTRUC_MSG_HEADER result;
                 err = pthread_mutex_lock(&pSocketobj->m_timerqueueMutex);
                 if(err != 0) cc_log_stderr(err,"CSocket::ServerTimerQueueMonitorThread()中pthread_mutex_lock()失败");
+                while ((result = pSocketobj->GetOverTimeTimer(cur_time)) != NULL) //一次性的把所有超时节点都拿过来
+				{
+					m_lsIdleList.push_back(result); 
+				}//end while
+                err = pthread_mutex_unlock(&pSocketobj->m_timerqueueMutex); 
+                if(err != 0) cc_log_stderr(err,"CSocket::ServerTimerQueueMonitorThread()中pthread_mutex_lock()失败");
                 LPSTRUC_MSG_HEADER tmpmsg;
                 while(!m_lsIdleList.empty())
                 {
