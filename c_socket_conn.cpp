@@ -35,6 +35,7 @@ void cc_connection_s::GetOneToUse()
 {
     ++iCurrsequence;
 
+    fd = -1;
     curStat = _PKG_HD_INIT;
     precvbuf = dataHeadInfo;
     irecvlen = sizeof(COMM_PKG_HEADER);
@@ -43,6 +44,7 @@ void cc_connection_s::GetOneToUse()
     iThrowsendCount = 0;
     psendMemPointer = NULL;             //发送数据头指针记录
     events = 0;                                               //epoll事件先给0
+    lastPingTime = time(NULL);            //上次ping的时间
 }
 
 void cc_connection_s::PutOneToFree()
@@ -186,8 +188,21 @@ void CSocket::cc_free_connection(lpcc_connection_t pConn)
 
 void CSocket::inRecyConnectQueue(lpcc_connection_t pConn)
 {
+    std::list<lpcc_connection_t>::iterator pos;
+    bool isfind = false;
     CLock lock(&m_recyconnqueueMutex);
-
+    for(pos = m_recyconnectionList.begin();pos != m_recyconnectionList.end();++pos)
+    {
+        if((*pos) == pConn)
+        {
+            isfind = true;
+            break;
+        }
+    }
+    if(isfind = true)
+    {
+        return;
+    }
     pConn->inRecyTime = time(NULL);
     ++pConn->iCurrsequence;
     m_recyconnectionList.push_back(pConn);
@@ -226,7 +241,7 @@ lblRRTD:
                     continue;   //没有到释放时间
                 }
                 //只要到达释放时间,iThrowsendCount就=0
-                if(p_Conn->iThrowsendCount != 0){
+                if(p_Conn->iThrowsendCount > 0){
                         cc_log_stderr(0,"CSocket::ServerRecyConnectionThread()中到释放时间却发现p_Conn.iThrowsendCount!=0,不该发生");
 
                 }
@@ -274,8 +289,9 @@ void CSocket::cc_close_connection(lpcc_connection_t pConn)
 {
     cc_free_connection(pConn);
 
-    if(close(pConn->fd)==-1){
-        cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::cc_close_accept_connection()中close(%d)失败!",pConn->fd);
+    if(pConn->fd != -1){
+            close(pConn->fd);
+            pConn->fd = -1;
     }
     return;
 }

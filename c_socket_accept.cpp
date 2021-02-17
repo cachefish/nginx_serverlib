@@ -100,6 +100,9 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
                 cc_close_connection(newc);
                 return;
             }
+            if(m_ifkickTimeCount == 1){
+                AddToTimerQueue(newc);
+            }
             break;
     }while(1);
     return;

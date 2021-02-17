@@ -108,12 +108,13 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
     n = recv(c->fd, buff, buflen, 0); //recv()系统函数， 最后一个参数flag，一般为0；     
     if(n == 0)
     {
-        //客户端关闭【应该是正常完成了4次挥手】，我这边就直接回收连接连接，关闭socket即可 
-        if(close(c->fd) == -1)
-        {
-            cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::recvproc()中close(%d)失败!",c->fd);  
-        }
-        inRecyConnectQueue(c);
+        // //客户端关闭【应该是正常完成了4次挥手】，我这边就直接回收连接连接，关闭socket即可 
+        // if(close(c->fd) == -1)
+        // {
+        //     cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::recvproc()中close(%d)失败!",c->fd);  
+        // }
+        // inRecyConnectQueue(c);
+        ActClosesocketProc(c);
         return -1;
     }
     //客户端没断，走这里 
@@ -148,7 +149,8 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
         {
             cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::recvproc()中close_2(%d)失败!",c->fd);  
         }
-        inRecyConnectQueue(c);
+        //inRecyConnectQueue(c);
+        ActClosesocketProc(c);
         return -1;
     }
 
