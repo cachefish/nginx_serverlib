@@ -33,7 +33,7 @@ typedef bool (CLogicSocket::*handler)(  lpcc_connection_t pConn,      //连接�
 static const handler statusHandler[] = 
 {
     //数组前5个元素，保留，以备将来增加一些基本服务器功能
-    NULL,                                                   //【0】：下标从0开始
+    &CLogicSocket::_HandlePing,                                                   //【0】心跳包实现
     NULL,                                                   //【1】：下标从0开始
     NULL,                                                   //【2】：下标从0开始
     NULL,                                                   //【3】：下标从0开始
@@ -132,6 +132,51 @@ void CLogicSocket::threadRecvProcFunc(char *pMsgBuf)
     return;	
 }
 
+
+//心跳包检测时间到，该去检测心跳包是否超时的事宜，本函数是子类函数，实现具体的判断动作
+void CLogicSocket::procPingTimeOutChecking(LPSTRUC_MSG_HEADER tmpmsg,time_t cur_time)
+{
+    CMemory *p_memory = CMemory::GetInstance();
+    if(tmpmsg->iCurrsequence == tmpmsg->pConn->iCurrsequence)
+    {
+        lpcc_connection_t p_Conn = tmpmsg->pConn;
+        if((cur_time - p_Conn->lastPingTime)> (m_iWaitTime*3+10))
+        {
+            //踢出去【如果此时此刻该用户正好断线，则这个socket可能立即被后续上来的连接复用  如果真有人这么倒霉，赶上这个点了，那么可能错踢，错踢就错踢】            
+            cc_log_stderr(0,"时间到不发心跳包，踢出去");   //感觉OK
+            ActClosesocketProc(p_Conn); 
+        }
+        p_memory->FreeMemory(tmpmsg);
+    }else{
+        //连接断开
+        p_memory->FreeMemory(tmpmsg);
+    }
+    return;
+}
+
+//发送没有包体的数据包给客户端
+void CLogicSocket::SendNoBodyPkgToClient(LPSTRUC_MSG_HEADER pMsgHeader,unsigned short iMsgCode)
+{
+    CMemory *p_memory = CMemory::GetInstance();
+
+    char *p_sendbuf = (char *)p_memory->AllocMemory(m_iLenMsgHeader+m_iLenPkgHeader,false);
+    char *p_tmpbuf = p_sendbuf;
+
+    memcpy(p_tmpbuf,pMsgHeader,m_iLenMsgHeader);
+    p_tmpbuf +=m_iLenMsgHeader;
+
+    LPCOMM_PKG_HEADER pPkgHeader = (LPCOMM_PKG_HEADER)p_tmpbuf;
+    pPkgHeader->msgCode = htons(iMsgCode);
+    pPkgHeader->pkgLen = htons(m_iLenPkgHeader);
+    pPkgHeader->crc32 = 0;
+    msgSend(p_sendbuf);
+    return;
+}
+
+
+
+
+
 //----------------------------------------------------------------------------------------------------------
 //处理各种业务逻辑
 bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pMsgHeader,char *pPkgBody,unsigned short iBodyLength)
@@ -162,7 +207,7 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
     CCRC32 *p_crc32 = CCRC32::GetInstance();
     int iSendLen = sizeof(STRUCT_REGISTER);
 
-iSendLen = 65000;
+     //iSendLen = 65000;
     //分配发送包的内存
     char *p_sendbuf = (char*)p_memory->AllocMemory(m_iLenMsgHeader+m_iLenPkgHeader+iSendLen,false);
     //填充消息头
@@ -194,4 +239,24 @@ bool CLogicSocket::_HandleLogIn(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pMsgH
 {
     cc_log_stderr(0,"执行了CLogicSocket::_HandleLogIn()!");
     return true;
+}
+
+//接收并处理客户端发送过来的ping包
+bool CLogicSocket::_HandlePing(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pMsgHeader,char *pPkgBody,unsigned short iBodyLength)
+{
+    //心跳包没有包体
+    if(iBodyLength != 0){
+        return false;
+    }
+
+    CLock lock(&pConn->logicPorcMutex);
+    pConn->lastPingTime = time(NULL);   //更新时间
+    
+    //服务器也发送一个只有包体的数据包给客户端，作为返回
+    SendNoBodyPkgToClient(pMsgHeader,_CMD_PING);
+
+    cc_log_stderr(0,"成功收到心跳包并返回结果");
+    return true;
+
+
 }
