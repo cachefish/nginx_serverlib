@@ -1,767 +1,366 @@
-2021/02/06 20:54:26 [stderr] 38060: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:15:38 [stderr] 40517: cc: sigaction(SIGHUP) succed!
 
-2021/02/06 20:54:26 [stderr] 38060: cc: sigaction(SIGINT) succed!
+2021/02/18 16:15:38 [stderr] 40517: cc: sigaction(SIGINT) succed!
 
-2021/02/06 20:54:26 [stderr] 38060: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:15:38 [stderr] 40517: cc: sigaction(SIGTERM) succed!
 
-2021/02/06 20:54:26 [stderr] 38060: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:15:38 [stderr] 40517: cc: sigaction(SIGCHLD) succed!
 
-2021/02/06 20:54:26 [stderr] 38060: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:15:38 [stderr] 40517: cc: sigaction(SIGQUIT) succed!
 
-2021/02/06 20:54:26 [stderr] 38060: cc: sigaction(SIGIO) succed!
+2021/02/18 16:15:38 [stderr] 40517: cc: sigaction(SIGIO) succed!
 
-2021/02/06 20:54:26 [stderr] 38060: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:15:38 [stderr] 40517: cc: sigaction(SIGSYS,SIG_IGN) succed!
 
-2021/02/06 20:54:26 [info] 38060: 监听80端口成功！
-2021/02/06 20:54:26 [info] 38060: 监听443端口成功！
-2021/02/06 20:54:26 [notice] 38061: master process ./test.exe 38061[master进程]启动并开始运行......!
-2021/02/06 20:54:28 [notice] 38062: worker process 38062 [worker进程]启动并开始运行......!
-2021/02/06 20:54:58 [stderr] 38084: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:15:38 [info] 40517: 监听80端口成功！
+2021/02/18 16:15:38 [info] 40517: 监听443端口成功！
+2021/02/18 16:15:38 [notice] 40518: master process ./test.exe 40518 【master进程】启动并开始运行......!
+2021/02/18 16:15:39 [notice] 40519: worker process 40519 【worker进程】启动并开始运行......!
+2021/02/18 16:15:44 [stderr] 40519: cc: 执行了CLogicSocket::_HandleRegister()!
 
-2021/02/06 20:54:58 [stderr] 38084: cc: sigaction(SIGINT) succed!
+2021/02/18 16:15:44 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:54:58 [stderr] 38084: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:15:46 [stderr] 40519: cc: 执行了CLogicSocket::_HandleRegister()!
 
-2021/02/06 20:54:58 [stderr] 38084: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:15:46 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:54:58 [stderr] 38084: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:15:49 [stderr] 40519: cc: 执行了CLogicSocket::_HandleRegister()!
 
-2021/02/06 20:54:58 [stderr] 38084: cc: sigaction(SIGIO) succed!
+2021/02/18 16:15:49 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:54:58 [stderr] 38084: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:06 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:54:58 [stderr] 38084: cc: SCocket::cc_open_listening_sockets()中的bind()失败,i = 0  (13: Permission denied) 
- (13: Permission denied) 
-2021/02/06 20:54:58 [stderr] 38084: cc: 程序退出
+2021/02/18 16:16:06 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:55:36 [stderr] 38088: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:10 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:55:36 [stderr] 38088: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:10 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:55:36 [stderr] 38088: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:13 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:55:36 [stderr] 38088: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:13 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:55:36 [stderr] 38088: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:55:36 [stderr] 38088: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:55:36 [stderr] 38088: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:55:36 [stderr] 38088: cc: SCocket::cc_open_listening_sockets()中的bind()失败,i = 0  (13: Permission denied) 
- (13: Permission denied) 
-2021/02/06 20:55:36 [stderr] 38088: cc: 程序退出
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:55:44 [stderr] 38062: cc: 收到了一个完整的数据包[包头+包体]
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:55:45 [notice] 38061: signal 17 (SIGCHLD) received from 38062
-2021/02/06 20:55:45 [alert] 38061: pid = 38062 exited on signal 6!
-2021/02/06 20:56:14 [stderr] 38092: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:56:14 [stderr] 38092: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:14 [stderr] 38092: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:14 [stderr] 38092: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:14 [stderr] 38092: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:14 [stderr] 38092: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:56:14 [stderr] 38092: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:56:14 [stderr] 38092: cc: SCocket::cc_open_listening_sockets()中的bind()失败,i = 0  (13: Permission denied) 
- (13: Permission denied) 
-2021/02/06 20:56:14 [stderr] 38092: cc: 程序退出
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:56:46 [stderr] 38096: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:46 [stderr] 38096: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:46 [stderr] 38096: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:46 [stderr] 38096: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:56:46 [stderr] 38096: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/06 20:56:46 [stderr] 38096: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:46 [stderr] 38096: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:16 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/06 20:56:46 [stderr] 38096: cc: SCocket::cc_open_listening_sockets()中的bind()失败,i = 0  (13: Permission denied) 
- (13: Permission denied) 
-2021/02/06 20:56:46 [stderr] 38096: cc: 程序退出
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:49:49 [stderr] 41913: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:49:49 [stderr] 41913: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:49:49 [stderr] 41913: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:49:49 [stderr] 41913: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:49:49 [stderr] 41913: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:49:49 [stderr] 41913: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:49:49 [stderr] 41913: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:49:49 [info] 41913: 监听80端口成功！
-2021/02/07 12:49:49 [info] 41913: 监听443端口成功！
-2021/02/07 12:49:49 [notice] 41914: master process ./test.exe 41914 【master进程】启动并开始运行......!
-2021/02/07 12:49:50 [notice] 41915: worker process 41915 【worker进程】启动并开始运行......!
-2021/02/07 12:50:03 [stderr] 41915: cc: 收到了一个完整的数据包[包头+包体]
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:50:03 [stderr] 41915: cc: 执行开始---begin,tid=140554710271744!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:50:03 [notice] 41914: signal 17 (SIGCHLD) received from 41915
-2021/02/07 12:50:03 [alert] 41914: pid = 41915 exited on signal 6!
-2021/02/07 12:55:23 [stderr] 42225: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:55:23 [stderr] 42225: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:55:23 [stderr] 42225: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:55:23 [stderr] 42225: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:55:23 [stderr] 42225: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:55:23 [stderr] 42225: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:55:23 [stderr] 42225: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:55:23 [info] 42225: 监听80端口成功！
-2021/02/07 12:55:23 [info] 42225: 监听443端口成功！
-2021/02/07 12:55:23 [notice] 42226: master process ./test.exe 42226 【master进程】启动并开始运行......!
-2021/02/07 12:55:24 [notice] 42227: worker process 42227 【worker进程】启动并开始运行......!
-2021/02/07 12:58:13 [stderr] 42517: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:58:13 [stderr] 42517: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:58:13 [stderr] 42517: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:18 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:58:13 [stderr] 42517: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:58:13 [stderr] 42517: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:58:13 [stderr] 42517: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:58:13 [stderr] 42517: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:58:13 [info] 42517: 监听80端口成功！
-2021/02/07 12:58:13 [info] 42517: 监听443端口成功！
-2021/02/07 12:58:13 [notice] 42518: master process ./test.exe 42518 【master进程】启动并开始运行......!
-2021/02/07 12:58:14 [notice] 42519: worker process 42519 【worker进程】启动并开始运行......!
-2021/02/07 12:58:29 [stderr] 42519: cc: 收到了一个完整的数据包[包头+包体]
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 12:58:29 [stderr] 42519: cc: 执行开始---begin,tid=139968807663360!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 12:58:29 [notice] 42518: signal 17 (SIGCHLD) received from 42519
-2021/02/07 12:58:29 [alert] 42518: pid = 42519 exited on signal 6!
-2021/02/07 13:03:13 [stderr] 43595: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:13 [stderr] 43595: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:13 [stderr] 43595: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:13 [stderr] 43595: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:13 [stderr] 43595: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:13 [stderr] 43595: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:13 [stderr] 43595: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:13 [info] 43595: 监听80端口成功！
-2021/02/07 13:03:13 [info] 43595: 监听443端口成功！
-2021/02/07 13:03:13 [notice] 43596: master process ./test.exe 43596 【master进程】启动并开始运行......!
-2021/02/07 13:03:15 [notice] 43597: worker process 43597 【worker进程】启动并开始运行......!
-2021/02/07 13:03:34 [stderr] 43597: cc: 执行开始---begin,tid=140311738476288!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:34 [stderr] 43597: cc: 执行开始---begin,tid=140311730083584!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:37 [stderr] 43597: cc: CThreadPool::Call()中发现线程池中当前空闲线程数量为0，要考虑扩容线程池了!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:39 [stderr] 43597: cc: 执行结束---end,tid=140311730083584!
+2021/02/18 16:16:19 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:39 [stderr] 43597: cc: 执行结束---end,tid=140311738476288!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:39 [stderr] 43597: cc: 执行开始---begin,tid=140311730083584!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:39 [stderr] 43597: cc: 执行开始---begin,tid=140311738476288!
+2021/02/18 16:16:19 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:44 [stderr] 43597: cc: 执行结束---end,tid=140311730083584!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:44 [stderr] 43597: cc: 执行开始---begin,tid=140311730083584!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:44 [stderr] 43597: cc: 执行结束---end,tid=140311738476288!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:44 [stderr] 43597: cc: 执行开始---begin,tid=140311738476288!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:49 [stderr] 43597: cc: 执行结束---end,tid=140311730083584!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:49 [stderr] 43597: cc: 执行开始---begin,tid=140311730083584!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:49 [stderr] 43597: cc: 执行结束---end,tid=140311738476288!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:49 [stderr] 43597: cc: 执行开始---begin,tid=140311738476288!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:53 [stderr] 43597: cc: 执行结束---end,tid=140311730083584!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:53 [stderr] 43597: cc: 执行开始---begin,tid=140311730083584!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:03:53 [stderr] 43597: cc: 执行结束---end,tid=140311738476288!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:53 [stderr] 43597: cc: 执行开始---begin,tid=140311738476288!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:58 [stderr] 43597: cc: 执行结束---end,tid=140311730083584!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:03:58 [stderr] 43597: cc: 执行结束---end,tid=140311738476288!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:15 [stderr] 43962: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:15 [stderr] 43962: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:15 [stderr] 43962: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:15 [stderr] 43962: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:15 [stderr] 43962: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:21 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:15 [stderr] 43962: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:21 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:15 [stderr] 43962: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:15 [info] 43962: 监听80端口成功！
-2021/02/07 13:12:15 [info] 43962: 监听443端口成功！
-2021/02/07 13:12:15 [notice] 43963: master process ./test.exe 43963 【master进程】启动并开始运行......!
-2021/02/07 13:12:16 [notice] 43964: worker process 43964 【worker进程】启动并开始运行......!
-2021/02/07 13:12:25 [stderr] 43964: cc: 执行开始---begin,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:25 [stderr] 43964: cc: 执行开始---begin,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:30 [stderr] 43964: cc: 执行结束---end,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:30 [stderr] 43964: cc: 执行结束---end,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:33 [stderr] 43964: cc: 执行开始---begin,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:33 [stderr] 43964: cc: 执行开始---begin,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:37 [stderr] 43964: cc: CThreadPool::Call()中发现线程池中当前空闲线程数量为0，要考虑扩容线程池了!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:38 [stderr] 43964: cc: 执行结束---end,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:38 [stderr] 43964: cc: 执行结束---end,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:38 [stderr] 43964: cc: 执行开始---begin,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 13:12:38 [stderr] 43964: cc: 执行开始---begin,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:43 [stderr] 43964: cc: 执行结束---end,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:43 [stderr] 43964: cc: 执行结束---end,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:43 [stderr] 43964: cc: 执行开始---begin,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:43 [stderr] 43964: cc: 执行开始---begin,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:48 [stderr] 43964: cc: 执行结束---end,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:48 [stderr] 43964: cc: 执行结束---end,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:48 [stderr] 43964: cc: 执行开始---begin,tid=139815161595648!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:48 [stderr] 43964: cc: 执行开始---begin,tid=139815153202944!
+2021/02/18 16:16:23 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 13:12:53 [stderr] 43964: cc: 执行结束---end,tid=139815161595648!
+2021/02/18 16:16:25 [stderr] 40519: cc: 执行了CLogicSocket::_HandleRegister()!
 
-2021/02/07 13:12:53 [stderr] 43964: cc: 执行结束---end,tid=139815153202944!
+2021/02/18 16:16:25 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:05:09 [stderr] 58553: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:05:09 [info] 58553: 监听80端口成功！
-2021/02/07 17:05:09 [info] 58553: 监听443端口成功！
-2021/02/07 17:05:09 [notice] 58554: master process ./test.exe 58554 【master进程】启动并开始运行......!
-2021/02/07 17:05:10 [notice] 58555: worker process 58555 【worker进程】启动并开始运行......!
-2021/02/07 17:06:17 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:06:17 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:06:22 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:06:22 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:06:27 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:06:27 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:06:29 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:06:29 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:06:30 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:06:30 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:06:36 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:06:36 [stderr] 58555: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:38 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:31 [stderr] 58741: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:31 [info] 58741: 监听80端口成功！
-2021/02/07 17:08:31 [info] 58741: 监听443端口成功！
-2021/02/07 17:08:31 [notice] 58742: master process ./test.exe 58742 【master进程】启动并开始运行......!
-2021/02/07 17:08:32 [notice] 58743: worker process 58743 【worker进程】启动并开始运行......!
-2021/02/07 17:08:42 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:42 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:43 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:43 [stderr] 58743: cc: CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:08:44 [notice] 58742: signal 17 (SIGCHLD) received from 58743
-2021/02/07 17:08:44 [alert] 58742: pid = 58743 exited on signal 6!
-2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGINT) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGIO) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:13:55 [stderr] 59413: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:13:55 [info] 59413: 监听80端口成功！
-2021/02/07 17:13:55 [info] 59413: 监听443端口成功！
-2021/02/07 17:13:55 [notice] 59414: master process ./test.exe 59414 【master进程】启动并开始运行......!
-2021/02/07 17:13:56 [notice] 59415: worker process 59415 【worker进程】启动并开始运行......!
-2021/02/07 17:14:05 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:14:05 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:14:08 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:16:51 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:14:08 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:14:10 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:14:10 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:14:11 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/07 17:14:11 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:14:13 [stderr] 59415: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/07 17:14:13 [stderr] 59415: cc: 执行了CLogicSocket::_HandleLogIn()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGHUP) succed!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGINT) succed!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGTERM) succed!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGCHLD) succed!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGQUIT) succed!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGIO) succed!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/09 16:23:10 [stderr] 83661: cc: sigaction(SIGSYS,SIG_IGN) succed!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/09 16:23:10 [info] 83661: 监听80端口成功！
-2021/02/09 16:23:10 [info] 83661: 监听443端口成功！
-2021/02/09 16:23:10 [notice] 83662: master process ./test.exe 83662 【master进程】启动并开始运行......!
-2021/02/09 16:23:11 [notice] 83663: worker process 83663 【worker进程】启动并开始运行......!
-2021/02/09 16:23:14 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/09 16:23:14 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/09 16:23:18 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:17:22 [stderr] 40519: cc: 成功收到心跳包并返回结果
 
-2021/02/09 16:23:18 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/09 16:23:21 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 
-2021/02/09 16:23:21 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:23:26 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:23:26 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:23:27 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:23:27 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:23:29 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:23:29 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:24:45 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:24:45 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:24:48 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:24:48 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:24:49 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:24:49 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:24:51 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:24:51 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:24:52 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:24:52 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/09 16:24:54 [stderr] 83663: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/09 16:24:54 [stderr] 83663: cc: 执行了CLogicSocket::_HandleLogIn()!
-
-2021/02/14 15:18:57 [stderr] 130292: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 15:18:57 [stderr] 130292: cc: sigaction(SIGINT) succed!
-
-2021/02/14 15:18:57 [stderr] 130292: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 15:18:57 [stderr] 130292: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 15:18:57 [stderr] 130292: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 15:18:57 [stderr] 130292: cc: sigaction(SIGIO) succed!
-
-2021/02/14 15:18:57 [stderr] 130292: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 15:18:57 [info] 130292: 监听80端口成功！
-2021/02/14 15:18:57 [info] 130292: 监听443端口成功！
-2021/02/14 15:18:57 [notice] 130293: master process ./test.exe 130293 【master进程】启动并开始运行......!
-2021/02/14 15:18:58 [notice] 130294: worker process 130294 【worker进程】启动并开始运行......!
-2021/02/14 15:18:59 [stderr] 130294: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:18:59 [stderr] 130294: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 15:19:03 [stderr] 130294: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:19:03 [notice] 130293: signal 17 (SIGCHLD) received from 130294
-2021/02/14 15:19:03 [alert] 130293: pid = 130294 exited on signal 11!
-2021/02/14 15:27:00 [stderr] 130645: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 15:27:00 [stderr] 130645: cc: sigaction(SIGINT) succed!
-
-2021/02/14 15:27:00 [stderr] 130645: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 15:27:00 [stderr] 130645: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 15:27:00 [stderr] 130645: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 15:27:00 [stderr] 130645: cc: sigaction(SIGIO) succed!
-
-2021/02/14 15:27:00 [stderr] 130645: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 15:27:00 [info] 130645: 监听80端口成功！
-2021/02/14 15:27:00 [info] 130645: 监听443端口成功！
-2021/02/14 15:27:00 [notice] 130646: master process ./test.exe 130646 【master进程】启动并开始运行......!
-2021/02/14 15:27:01 [notice] 130647: worker process 130647 【worker进程】启动并开始运行......!
-2021/02/14 15:27:06 [stderr] 130647: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:27:06 [stderr] 130647: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 15:27:24 [stderr] 130647: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:27:24 [notice] 130646: signal 17 (SIGCHLD) received from 130647
-2021/02/14 15:27:24 [alert] 130646: pid = 130647 exited on signal 11!
-2021/02/14 15:36:37 [stderr] 532: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 15:36:37 [stderr] 532: cc: sigaction(SIGINT) succed!
-
-2021/02/14 15:36:37 [stderr] 532: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 15:36:37 [stderr] 532: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 15:36:37 [stderr] 532: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 15:36:37 [stderr] 532: cc: sigaction(SIGIO) succed!
-
-2021/02/14 15:36:37 [stderr] 532: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 15:36:37 [info] 532: 监听80端口成功！
-2021/02/14 15:36:37 [info] 532: 监听443端口成功！
-2021/02/14 15:36:37 [notice] 533: master process ./test.exe 533 【master进程】启动并开始运行......!
-2021/02/14 15:36:38 [notice] 534: worker process 534 【worker进程】启动并开始运行......!
-2021/02/14 15:36:40 [stderr] 534: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:36:40 [stderr] 534: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 15:36:44 [stderr] 534: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:36:44 [notice] 533: signal 17 (SIGCHLD) received from 534
-2021/02/14 15:36:44 [alert] 533: pid = 534 exited on signal 6!
-2021/02/14 15:50:54 [stderr] 3336: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 15:50:54 [stderr] 3336: cc: sigaction(SIGINT) succed!
-
-2021/02/14 15:50:54 [stderr] 3336: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 15:50:54 [stderr] 3336: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 15:50:54 [stderr] 3336: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 15:50:54 [stderr] 3336: cc: sigaction(SIGIO) succed!
-
-2021/02/14 15:50:54 [stderr] 3336: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 15:50:54 [info] 3336: 监听80端口成功！
-2021/02/14 15:50:54 [info] 3336: 监听443端口成功！
-2021/02/14 15:50:54 [notice] 3337: master process ./test.exe 3337 【master进程】启动并开始运行......!
-2021/02/14 15:50:56 [notice] 3338: worker process 3338 【worker进程】启动并开始运行......!
-2021/02/14 15:50:58 [stderr] 3338: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:50:58 [stderr] 3338: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 15:51:01 [stderr] 3338: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 15:51:01 [notice] 3337: signal 17 (SIGCHLD) received from 3338
-2021/02/14 15:51:01 [alert] 3337: pid = 3338 exited on signal 6!
-2021/02/14 16:04:35 [stderr] 4033: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 16:04:35 [stderr] 4033: cc: sigaction(SIGINT) succed!
-
-2021/02/14 16:04:35 [stderr] 4033: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 16:04:35 [stderr] 4033: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 16:04:35 [stderr] 4033: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 16:04:35 [stderr] 4033: cc: sigaction(SIGIO) succed!
-
-2021/02/14 16:04:35 [stderr] 4033: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 16:04:35 [info] 4033: 监听80端口成功！
-2021/02/14 16:04:35 [info] 4033: 监听443端口成功！
-2021/02/14 16:04:35 [notice] 4037: master process /home/cachecat/Test2/nginxs/test.exe 4037 【master进程】启动并开始运行......!
-2021/02/14 16:04:36 [notice] 4038: worker process 4038 【worker进程】启动并开始运行......!
-2021/02/14 16:05:11 [stderr] 4038: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:05:11 [stderr] 4038: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:05:15 [stderr] 4038: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:05:15 [info] 4038: CSocket::cc_epoll_process_events中epoll_wait()失败! (4: Interrupted system call) 
-2021/02/14 16:34:39 [stderr] 5304: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 16:34:39 [stderr] 5304: cc: sigaction(SIGINT) succed!
-
-2021/02/14 16:34:39 [stderr] 5304: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 16:34:39 [stderr] 5304: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 16:34:39 [stderr] 5304: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 16:34:39 [stderr] 5304: cc: sigaction(SIGIO) succed!
-
-2021/02/14 16:34:39 [stderr] 5304: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 16:34:39 [info] 5304: 监听80端口成功！
-2021/02/14 16:34:39 [info] 5304: 监听443端口成功！
-2021/02/14 16:34:39 [notice] 5305: master process ./test.exe 5305 【master进程】启动并开始运行......!
-2021/02/14 16:34:40 [notice] 5306: worker process 5306 【worker进程】启动并开始运行......!
-2021/02/14 16:34:57 [stderr] 5306: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:34:57 [stderr] 5306: cc: 即将发送数据65016。
-
-2021/02/14 16:34:57 [stderr] 5306: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:35:02 [stderr] 5306: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:35:02 [stderr] 5306: cc: 即将发送数据65016。
-
-2021/02/14 16:35:02 [stderr] 5306: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:35:12 [stderr] 5306: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:35:12 [stderr] 5306: cc: 即将发送数据65016。
-
-2021/02/14 16:35:12 [stderr] 5306: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:35:15 [stderr] 5306: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:35:15 [stderr] 5306: cc: 即将发送数据65016。
-
-2021/02/14 16:35:15 [stderr] 5306: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:35:40 [stderr] 5306: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:35:40 [stderr] 5306: cc: 即将发送数据65016。
-
-2021/02/14 16:35:40 [stderr] 5306: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:35:46 [stderr] 5306: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:35:46 [stderr] 5306: cc: 即将发送数据65016。
-
-2021/02/14 16:35:46 [stderr] 5306: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:44:17 [stderr] 6607: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 16:44:17 [stderr] 6607: cc: sigaction(SIGINT) succed!
-
-2021/02/14 16:44:17 [stderr] 6607: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 16:44:17 [stderr] 6607: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 16:44:17 [stderr] 6607: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 16:44:17 [stderr] 6607: cc: sigaction(SIGIO) succed!
-
-2021/02/14 16:44:17 [stderr] 6607: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 16:44:17 [info] 6607: 监听80端口成功！
-2021/02/14 16:44:17 [info] 6607: 监听443端口成功！
-2021/02/14 16:44:17 [notice] 6608: master process ./test.exe 6608 【master进程】启动并开始运行......!
-2021/02/14 16:44:18 [notice] 6609: worker process 6609 【worker进程】启动并开始运行......!
-2021/02/14 16:44:25 [stderr] 6609: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:44:25 [stderr] 6609: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:44:28 [stderr] 6609: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:44:28 [notice] 6608: signal 17 (SIGCHLD) received from 6609
-2021/02/14 16:44:28 [alert] 6608: pid = 6609 exited on signal 6!
-2021/02/14 16:45:21 [stderr] 6737: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 16:45:21 [stderr] 6737: cc: sigaction(SIGINT) succed!
-
-2021/02/14 16:45:21 [stderr] 6737: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 16:45:21 [stderr] 6737: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 16:45:21 [stderr] 6737: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 16:45:21 [stderr] 6737: cc: sigaction(SIGIO) succed!
-
-2021/02/14 16:45:21 [stderr] 6737: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 16:45:21 [info] 6737: 监听80端口成功！
-2021/02/14 16:45:21 [info] 6737: 监听443端口成功！
-2021/02/14 16:45:21 [notice] 6738: master process ./test.exe 6738 【master进程】启动并开始运行......!
-2021/02/14 16:45:22 [notice] 6739: worker process 6739 【worker进程】启动并开始运行......!
-2021/02/14 16:45:29 [stderr] 6739: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:45:29 [stderr] 6739: cc: 即将发送数据65016。
-
-2021/02/14 16:45:29 [stderr] 6739: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:45:31 [stderr] 6739: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:45:31 [stderr] 6739: cc: 即将发送数据65016。
-
-2021/02/14 16:45:31 [stderr] 6739: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:45:34 [stderr] 6739: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:45:34 [stderr] 6739: cc: 即将发送数据65016。
-
-2021/02/14 16:45:34 [stderr] 6739: cc: CSocekt::ServerSendQueueThread()中数据发送完毕，很好。
-
-2021/02/14 16:51:57 [stderr] 7113: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 16:51:57 [stderr] 7113: cc: sigaction(SIGINT) succed!
-
-2021/02/14 16:51:57 [stderr] 7113: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 16:51:57 [stderr] 7113: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 16:51:57 [stderr] 7113: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 16:51:57 [stderr] 7113: cc: sigaction(SIGIO) succed!
-
-2021/02/14 16:51:57 [stderr] 7113: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 16:51:57 [info] 7113: 监听80端口成功！
-2021/02/14 16:51:57 [info] 7113: 监听443端口成功！
-2021/02/14 16:51:57 [notice] 7114: master process ./test.exe 7114 【master进程】启动并开始运行......!
-2021/02/14 16:51:58 [notice] 7115: worker process 7115 【worker进程】启动并开始运行......!
-2021/02/14 16:52:05 [stderr] 7115: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:52:05 [stderr] 7115: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:52:07 [stderr] 7115: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:52:07 [notice] 7114: signal 17 (SIGCHLD) received from 7115
-2021/02/14 16:52:07 [alert] 7114: pid = 7115 exited on signal 6!
-2021/02/14 16:56:48 [stderr] 7971: cc: sigaction(SIGHUP) succed!
-
-2021/02/14 16:56:48 [stderr] 7971: cc: sigaction(SIGINT) succed!
-
-2021/02/14 16:56:48 [stderr] 7971: cc: sigaction(SIGTERM) succed!
-
-2021/02/14 16:56:48 [stderr] 7971: cc: sigaction(SIGCHLD) succed!
-
-2021/02/14 16:56:48 [stderr] 7971: cc: sigaction(SIGQUIT) succed!
-
-2021/02/14 16:56:48 [stderr] 7971: cc: sigaction(SIGIO) succed!
-
-2021/02/14 16:56:48 [stderr] 7971: cc: sigaction(SIGSYS,SIG_IGN) succed!
-
-2021/02/14 16:56:48 [info] 7971: 监听80端口成功！
-2021/02/14 16:56:48 [info] 7971: 监听443端口成功！
-2021/02/14 16:56:48 [notice] 7972: master process ./test.exe 7972 【master进程】启动并开始运行......!
-2021/02/14 16:56:49 [notice] 7973: worker process 7973 【worker进程】启动并开始运行......!
-2021/02/14 16:56:57 [stderr] 7973: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:56:57 [stderr] 7973: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:56:59 [stderr] 7973: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:56:59 [stderr] 7973: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:57:01 [stderr] 7973: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:57:01 [stderr] 7973: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:57:02 [stderr] 7973: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:57:02 [stderr] 7973: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:57:27 [stderr] 7973: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:57:27 [stderr] 7973: cc: CSocket::ServerSendQueueThread()中数据发送完毕
-
-2021/02/14 16:57:29 [stderr] 7973: cc: 执行了CLogicSocket::_HandleRegister()!
-
-2021/02/14 16:57:29 [stderr] 7973: cc: CSocket::ServerSendQueueThread()中数据发送完毕
+2021/02/18 16:17:22 [stderr] 40519: cc: CSocket::ServerSendQueueThread()中数据发送完毕
 

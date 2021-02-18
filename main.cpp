@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
+#include <sys/time.h>
 #include "c_conf.h"  //和配置文件处理相关的类,名字带c_表示和类有关
 
 #include "c_func.h"    //各种函数声明
