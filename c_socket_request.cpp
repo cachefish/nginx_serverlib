@@ -24,6 +24,7 @@
 //来数据时候的处理，当连接上有数据来的时候，本函数会被cc_epoll_process_events()所调用  ,官方的类似函数为cc_http_wait_request_handler();
 void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
 {  
+    bool isflood = false;
     //收包，注意我们用的第二个和第三个参数，我们用的始终是这两个参数，因此我们必须保证 c->precvbuf指向正确的收包位置，保证c->irecvlen指向正确的收包宽度
     ssize_t reco = recvproc(pConn,pConn->precvbuf,pConn->irecvlen); 
     if(reco <= 0)  
@@ -36,7 +37,7 @@ void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
     {        
         if(reco == m_iLenPkgHeader)//正好收到完整包头，这里拆解包头
         {   
-            cc_wait_request_handler_proc_p1(pConn); //那就调用专门针对包头处理完整的函数去处理把。
+            cc_wait_request_handler_proc_p1(pConn,isflood); //那就调用专门针对包头处理完整的函数去处理把。
         }
         else
 		{
@@ -51,7 +52,7 @@ void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
         if(pConn->irecvlen == reco) //要求收到的宽度和我实际收到的宽度相等
         {
             //包头收完整了
-            cc_wait_request_handler_proc_p1(pConn); //那就调用专门针对包头处理完整的函数去处理把。
+            cc_wait_request_handler_proc_p1(pConn,isflood); //那就调用专门针对包头处理完整的函数去处理把。
         }
         else
 		{
@@ -66,8 +67,12 @@ void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
         //包头刚好收完，准备接收包体
         if(reco == pConn->irecvlen)
         {
+            if(m_floodAkEnable == 1)
+            {
+                isflood = TestFlood(pConn);
+            }
             //收到的宽度等于要收的宽度，包体也收完整了
-            cc_wait_request_handler_proc_plast(pConn);
+            cc_wait_request_handler_proc_plast(pConn,isflood);
         }
         else
 		{
@@ -83,7 +88,11 @@ void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
         if(pConn->irecvlen == reco)
         {
             //包体收完整了
-            cc_wait_request_handler_proc_plast(pConn);
+            if(m_floodAkEnable == 1)
+            {
+                isflood = TestFlood(pConn);
+            }
+            cc_wait_request_handler_proc_plast(pConn,isflood);
         }
         else
         {
@@ -92,6 +101,10 @@ void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
 			pConn->irecvlen = pConn->irecvlen - reco;
         }
     }  //end if(c->curStat == _PKG_HD_INIT)
+    if(isflood == true){
+        //客户端flood服务器，则直接把客户端踢掉
+        ActClosesocketProc(pConn);
+    }
     return;
 }
 
@@ -101,11 +114,11 @@ void CSocket::cc_read_request_handler(lpcc_connection_t pConn)
 //参数buflen：要接收的数据大小
 //返回值：返回-1，则是有问题发生并且在这里把问题处理完毕了，调用本函数的调用者一般是可以直接return
 //        返回>0，则是表示实际收到的字节数
-ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssize_t是有符号整型，在32位机器上等同与int，在64位机器上等同与long int，size_t就是无符号型的ssize_t
+ssize_t CSocket::recvproc(lpcc_connection_t pConn,char *buff,ssize_t buflen)  //ssize_t是有符号整型，在32位机器上等同与int，在64位机器上等同与long int，size_t就是无符号型的ssize_t
 {
     ssize_t n;
     
-    n = recv(c->fd, buff, buflen, 0); //recv()系统函数， 最后一个参数flag，一般为0；     
+    n = recv(pConn->fd, buff, buflen, 0); //recv()系统函数， 最后一个参数flag，一般为0；     
     if(n == 0)
     {
         // //客户端关闭【应该是正常完成了4次挥手】，我这边就直接回收连接连接，关闭socket即可 
@@ -114,7 +127,7 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
         //     cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::recvproc()中close(%d)失败!",c->fd);  
         // }
         // inRecyConnectQueue(c);
-        ActClosesocketProc(c);
+        ActClosesocketProc(pConn);
         return -1;
     }
     //客户端没断，走这里 
@@ -144,13 +157,8 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
             cc_log_stderr(errno,"CSocket::recvproc()中发生错误，我打印出来看看是啥错误！");  //正式运营时可以考虑这些日志打印去掉
         } 
         
-        //cc_log_stderr(0,"连接被客户端 非 正常关闭！");
-        if(close(c->fd) == -1)
-        {
-            cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::recvproc()中close_2(%d)失败!",c->fd);  
-        }
         //inRecyConnectQueue(c);
-        ActClosesocketProc(c);
+        ActClosesocketProc(pConn);
         return -1;
     }
 
@@ -160,7 +168,7 @@ ssize_t CSocket::recvproc(lpcc_connection_t c,char *buff,ssize_t buflen)  //ssiz
 
 
 //包头收完整后的处理，我们称为包处理阶段1【p1】：写成函数，方便复用
-void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn)
+void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn,bool &isflood)
 {
     CMemory *p_memory = CMemory::GetInstance();		
 
@@ -206,8 +214,13 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn)
         if(e_pkgLen == m_iLenPkgHeader)
         {
             //该报文只有包头无包体【我们允许一个包只有包头，没有包体】
-            //这相当于收完整了，则直接入消息队列待后续业务逻辑线程去处理吧
-            cc_wait_request_handler_proc_plast(pConn);
+            //这相当于收完整了，则直接入消息队列待后续业务逻辑线程去处理
+            if(m_floodAkEnable == 1) 
+            {
+                //Flood攻击检测是否开启
+                isflood = TestFlood(pConn);
+            }
+            cc_wait_request_handler_proc_plast(pConn,isflood);
         } 
         else
         {
@@ -222,11 +235,17 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn)
 }
 
 //收到一个完整包后的处理【plast表示最后阶段】，放到一个函数中，方便调用
-void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t pConn)
+void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t pConn,bool &isflood)
 {
-    //把这段内存放到消息队列中来；
-    g_threadpool.inMsgRecvQueueAndSingal(pConn->precvMemPointer);
-    
+    if(isflood == false)
+    {
+        //把这段内存放到消息队列中来；
+        g_threadpool.inMsgRecvQueueAndSingal(pConn->precvMemPointer);
+    }else{
+        CMemory *p_memory = CMemory::GetInstance();
+        p_memory->FreeMemory(pConn->precvMemPointer);
+    }
+   
    // c->ifnewrecvMem    = false;            //内存不再需要释放，因为你收完整了包，这个包被上边调用inMsgRecvQueue()移入消息队列，那么释放内存就属于业务逻辑去干，不需要回收连接到连接池中干了
     pConn->precvMemPointer  = NULL;
     pConn->curStat         = _PKG_HD_INIT;     //收包状态机的状态恢复为原始态，为收下一个包做准备                    

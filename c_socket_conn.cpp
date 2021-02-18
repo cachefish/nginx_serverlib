@@ -45,6 +45,9 @@ void cc_connection_s::GetOneToUse()
     psendMemPointer = NULL;             //发送数据头指针记录
     events = 0;                                               //epoll事件先给0
     lastPingTime = time(NULL);            //上次ping的时间
+
+    FloodkickLastTime = 0;                      //Flood攻击上次收到包的时间
+    FloodAttackCount =0;                        //Flood攻击在该时间内收到包的次数统计
 }
 
 void cc_connection_s::PutOneToFree()
@@ -207,6 +210,7 @@ void CSocket::inRecyConnectQueue(lpcc_connection_t pConn)
     ++pConn->iCurrsequence;
     m_recyconnectionList.push_back(pConn);
     ++m_total_connection_n;
+    --m_onlineUserCount;    //连入用户数量-1
     return;
 }
 
