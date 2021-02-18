@@ -47,6 +47,10 @@ cc_daemon();
 待改进
 
 ```
+# 网络安全相关
+
+###  对于flood攻击的处理
+[flood攻击防范](https://github.com/cachefish/nginx_serverlib/blob/master/analysis/flood%E6%94%BB%E5%87%BB%E9%98%B2%E8%8C%83.md "flood攻击防范"),用来防范客户端恶意发送大量数据包
 
 
 
