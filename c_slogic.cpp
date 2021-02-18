@@ -140,7 +140,11 @@ void CLogicSocket::procPingTimeOutChecking(LPSTRUC_MSG_HEADER tmpmsg,time_t cur_
     if(tmpmsg->iCurrsequence == tmpmsg->pConn->iCurrsequence)
     {
         lpcc_connection_t p_Conn = tmpmsg->pConn;
-        if((cur_time - p_Conn->lastPingTime)> (m_iWaitTime*3+10))
+
+        if(m_ifTimeOutKick == 1){
+            ActClosesocketProc(p_Conn);
+        }
+        else if((cur_time - p_Conn->lastPingTime)> (m_iWaitTime*3+10))
         {
             //踢出去【如果此时此刻该用户正好断线，则这个socket可能立即被后续上来的连接复用  如果真有人这么倒霉，赶上这个点了，那么可能错踢，错踢就错踢】            
             cc_log_stderr(0,"时间到不发心跳包，踢出去");   //感觉OK
@@ -195,7 +199,9 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
    CLock lcok(&pConn->logicPorcMutex);
     //取得了整个发送过来的数据
    LPSTRUCT_REGISTER p_RecvInfo  = (LPSTRUCT_REGISTER)pPkgBody;
-
+    p_RecvInfo->iType = ntohl(p_RecvInfo->iType);
+    p_RecvInfo->username[sizeof(p_RecvInfo->username)-1] = 0;//防止客户端发送过来畸形包
+    p_RecvInfo->password[sizeof(p_RecvInfo->password)-1] = 0;//防止客户端发送过来畸形包
    //通过pPkgBody中结构数据跟数据库中的数据进行验证，从而进行登录验证
    //这些都是业务逻辑
 
