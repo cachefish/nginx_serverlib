@@ -70,6 +70,13 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
             }//end if(s==-1)
 
             //accept4成功
+            if(m_onlineUserCount >= m_worker_connections)   //用户连接过多
+            {
+                cc_log_stderr(0,"超过系统允许最大连接用户数%d,关闭连入请求(%d)",m_worker_connections,s);
+                close(s);
+                return;
+            }
+
             newc = cc_get_connection(s);
             if(newc == NULL){
                 if(close(s) == -1){
@@ -103,6 +110,7 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
             if(m_ifkickTimeCount == 1){
                 AddToTimerQueue(newc);
             }
+            ++m_onlineUserCount;    //连接用户数+1
             break;
     }while(1);
     return;
