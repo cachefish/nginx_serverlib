@@ -33,7 +33,9 @@ m_iSendMsgQueueCount(0),
 m_total_recyconnection_n(0),
 m_cur_size_(0),
 m_timer_value_(0),
-m_onlineUserCount(0)
+m_iDiscardSendPkgCount(0),
+m_onlineUserCount(0),
+m_lastprintTime(0)
 {   
     
 }
@@ -327,8 +329,30 @@ void CSocket::cc_close_listening_sockets()
 
 //将一个待发送消息入到发消息队列
 void CSocket::msgSend(char *psendbuf)
-{
+{   
+    CMemory *p_memory = CMemory::GetInstance();
+
     CLock lock(&m_sendMessageQueueMutex);
+    //发送消息队列过大
+    if(m_iSendMsgQueueCount > 50000)
+    {
+        m_iDiscardSendPkgCount++;
+        p_memory->FreeMemory(psendbuf);
+    }
+
+    LPSTRUC_MSG_HEADER pMsgHeader = (LPSTRUC_MSG_HEADER)psendbuf;
+    lpcc_connection_t p_Conn = pMsgHeader->pConn;
+    if(p_Conn->iSendCount > 400)
+    {
+        //该用户收消息太慢,累积的该用户的发送队列中有的数据条目数过大，认为是恶意用户
+        cc_log_stderr(0,"CSocket::msgSend()中发现某用户%d积压了大量待发送数据包，切断与他的连接！",p_Conn->fd);      
+        m_iDiscardSendPkgCount++;
+        p_memory->FreeMemory(psendbuf);
+        ActClosesocketProc(p_Conn); //直接关闭
+		return;
+    }
+
+    ++p_Conn->iSendCount;   //发送队列中的数据条目+1
     m_MsgSendQueue.push_back(psendbuf);
     ++m_iSendMsgQueueCount;
 
@@ -382,6 +406,32 @@ bool CSocket::TestFlood(lpcc_connection_t pConn)
     }
     return reco;
 }
+
+void CSocket::printInfo()
+{
+    time_t currtime = time(NULL);
+    if((currtime - m_lastprintTime) > 10)
+    {
+        int tmprmqc = g_threadpool.getRecvMsgQueueCount();  //收消息队列
+
+        m_lastprintTime = currtime;
+        int tmpoLUC = m_onlineUserCount;        //在线用户数
+        int tmpsmqc = m_iSendMsgQueueCount; //发送消息队列数
+        cc_log_stderr(0,"------------------------------------begin--------------------------------------");
+        cc_log_stderr(0,"当前在线人数/总人数(%d/%d)。",tmpoLUC,m_worker_connections);        
+        cc_log_stderr(0,"连接池中空闲连接/总连接/要释放的连接(%d/%d/%d)。",m_freeconnectionList.size(),m_connectionList.size(),m_recyconnectionList.size());
+        cc_log_stderr(0,"当前时间队列大小(%d)。",m_timerQueuemap.size());        
+        cc_log_stderr(0,"当前收消息队列/发消息队列大小分别为(%d/%d)，丢弃的待发送数据包数量为%d。",tmprmqc,tmpsmqc,m_iDiscardSendPkgCount);        
+        if( tmprmqc > 100000)
+        {
+            //接收队列过大，报一下，这个属于应该 引起警觉的，考虑限速等等手段
+            cc_log_stderr(0,"接收队列条目数量过大(%d)，要考虑限速或者增加处理线程数量了！！！！！！",tmprmqc);
+        }
+        cc_log_stderr(0,"-------------------------------------end---------------------------------------");
+    }
+    return;
+}
+
 
 int CSocket::cc_epoll_init()
 {
@@ -673,7 +723,7 @@ void* CSocket::ServerSendQueueThread(void* threadData)
                         pos++;
                         continue;
                     }
-
+                    --p_Conn->iSendCount;   //消息队列中的数量条数-1
 
                     //开始发送消息
                     p_Conn->psendMemPointer = pMsgbuf;
@@ -693,7 +743,7 @@ void* CSocket::ServerSendQueueThread(void* threadData)
                             p_memory->FreeMemory(p_Conn->psendMemPointer);
                             p_Conn->psendMemPointer = NULL;
                             p_Conn->iThrowsendCount = 0;    
-                            cc_log_stderr(0,"CSocket::ServerSendQueueThread()中数据发送完毕");
+                            //cc_log_stderr(0,"CSocket::ServerSendQueueThread()中数据发送完毕");
                         }else{//没有全部发送完毕
                             p_Conn->psendbuf = p_Conn->psendbuf + sendsize;
                             p_Conn->isendlen = p_Conn->isendlen-sendsize;
