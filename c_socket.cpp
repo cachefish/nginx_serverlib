@@ -247,6 +247,13 @@ bool CSocket::cc_open_listening_sockets()
             close(isock);
             return false;
         }
+        //处理惊群
+        int reuseport = 1;
+        if(setsockopt(isock,SOL_SOCKET,SO_REUSEPORT,(const void*)&reuseport,sizeof(int)==-1))
+        {
+            cc_log_stderr(errno,"CSocket::Initialize()中setsockopt(SO_REUSEPORT)失败");
+        }
+
         //设置非阻塞
         if(setnonblock(isock) == false)
         {
