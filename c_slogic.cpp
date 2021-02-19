@@ -100,7 +100,9 @@ void CLogicSocket::threadRecvProcFunc(char *pMsgBuf)
 		{
             cc_log_stderr(0,"CLogicSocket::threadRecvProcFunc()中CRC错误，丢弃数据!");    //正式代码中可以干掉这个信息
 			return; //crc错，直接丢弃
-		}
+		}else{
+
+        }
 	}
 
     //包crc校验OK才能走到这里    	
@@ -238,12 +240,44 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
     // }
 
 
-    cc_log_stderr(0,"执行了CLogicSocket::_HandleRegister()!");
+   // cc_log_stderr(0,"执行了CLogicSocket::_HandleRegister()!");
     return true;
 }
 bool CLogicSocket::_HandleLogIn(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pMsgHeader,char *pPkgBody,unsigned short iBodyLength)
 {
-    cc_log_stderr(0,"执行了CLogicSocket::_HandleLogIn()!");
+    //cc_log_stderr(0,"执行了CLogicSocket::_HandleLogIn()!");
+    if(pPkgBody == NULL)
+    {
+        return false;
+    }
+
+    int iRecvlen = sizeof(STRUCT_LOGIN);
+    if(iRecvlen != iBodyLength){
+        return false;
+    }
+    CLock lock(&pConn->logicPorcMutex);
+
+    LPSTRUCT_LOGIN p_RecvInfo = (LPSTRUCT_LOGIN)pPkgBody;
+    p_RecvInfo->username[sizeof(p_RecvInfo->username)-1] = 0;
+    p_RecvInfo->password[sizeof(p_RecvInfo->password)-1] = 0;
+
+    LPCOMM_PKG_HEADER pPkgHeader;
+    CMemory *p_memory = CMemory::GetInstance();
+    CCRC32 *p_crc32 = CCRC32::GetInstance();
+
+    int iSendLen = sizeof(STRUCT_LOGIN);
+    char *p_sendbuf = (char*)p_memory->AllocMemory(m_iLenMsgHeader+m_iLenPkgHeader+iSendLen,false);
+    memcpy(p_sendbuf,pMsgHeader,m_iLenMsgHeader);
+    pPkgHeader = (LPCOMM_PKG_HEADER)(p_sendbuf+m_iLenMsgHeader);
+    pPkgHeader->msgCode = _CMD_LOGIN;
+    pPkgHeader->msgCode = htons(pPkgHeader->msgCode);
+    pPkgHeader->pkgLen  = htons(m_iLenPkgHeader + iSendLen); 
+
+    LPSTRUCT_LOGIN p_sendInfo = (LPSTRUCT_LOGIN)(p_sendbuf+m_iLenMsgHeader+m_iLenPkgHeader);
+    pPkgHeader->crc32   = p_crc32->Get_CRC((unsigned char *)p_sendInfo,iSendLen);
+    pPkgHeader->crc32   = htonl(pPkgHeader->crc32);
+    //cc_log_stderr(0,"成功收到了登录并返回结果");
+    msgSend(p_sendbuf);
     return true;
 }
 
@@ -261,7 +295,7 @@ bool CLogicSocket::_HandlePing(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pMsgHe
     //服务器也发送一个只有包体的数据包给客户端，作为返回
     SendNoBodyPkgToClient(pMsgHeader,_CMD_PING);
 
-    cc_log_stderr(0,"成功收到心跳包并返回结果");
+    //cc_log_stderr(0,"成功收到心跳包并返回结果");
     return true;
 
 
