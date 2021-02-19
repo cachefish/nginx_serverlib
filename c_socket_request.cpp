@@ -372,12 +372,14 @@ void CSocket::cc_write_request_handler(lpcc_connection_t pConn)
     }
    
     //数据发送完毕，或者把需要发送的数据干掉，都说明发送缓冲区可能有地方了，让发送线程往下走判断能否发送新数据
-    if(sem_post(&m_semEventSendQueue)==-1)
-        cc_log_stderr(0,"CSocket::cc_write_request_handler()中的sem_post(&m_semEventSendQueue)失败");
+
     
     p_memory->FreeMemory(pConn->psendMemPointer);
     pConn->psendMemPointer = NULL;
     --pConn->iThrowsendCount;
+
+    if(sem_post(&m_semEventSendQueue)==-1)
+        cc_log_stderr(0,"CSocket::cc_write_request_handler()中的sem_post(&m_semEventSendQueue)失败");
     return;
 
 }
