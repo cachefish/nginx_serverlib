@@ -51,7 +51,7 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
                 {
                     level = CC_LOG_CRIT;
                 }
-                cc_log_error_core(level,errno,"CSocket::cc_event_accept()中accept4()失败!");
+                //cc_log_error_core(level,errno,"CSocket::cc_event_accept()中accept4()失败!");
 
                 if(use_accept4 && err == ENOSYS)
                 {
@@ -72,9 +72,19 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
             //accept4成功
             if(m_onlineUserCount >= m_worker_connections)   //用户连接过多
             {
-                cc_log_stderr(0,"超过系统允许最大连接用户数%d,关闭连入请求(%d)",m_worker_connections,s);
+                //cc_log_stderr(0,"超过系统允许最大连接用户数%d,关闭连入请求(%d)",m_worker_connections,s);
                 close(s);
                 return;
+            }
+             //如果某些恶意用户连上来发了1条数据就断，不断连接，会导致频繁调用cc_get_connection()使用我们短时间内产生大量连接，危及本服务器安全
+            if(m_connectionList.size() > (m_worker_connections*5))
+            {
+                if(m_freeconnectionList.size() < m_worker_connections)
+                {
+                    //短时间内 产生大量连接，发一个包后就断开，我们不可能让这种情况持续发生，所以必须断开新入用户的连接
+                    close(s);
+                    return;
+                }
             }
 
             newc = cc_get_connection(s);

@@ -154,7 +154,13 @@ ssize_t CSocket::recvproc(lpcc_connection_t pConn,char *buff,ssize_t buflen)  //
         }
         else
         {
-            cc_log_stderr(errno,"CSocket::recvproc()中发生错误，我打印出来看看是啥错误！");  //正式运营时可以考虑这些日志打印去掉
+            if(errno == EBADF)  // #define EBADF   9 /* Bad file descriptor */
+            {
+                //因为多线程，偶尔会干掉socket，所以不排除产生这个错误的可能性
+            }
+            else{
+                cc_log_stderr(errno,"CSocket::recvproc()中发生错误");  
+            }
         } 
         
         //inRecyConnectQueue(c);
@@ -261,7 +267,6 @@ void CSocket::cc_wait_request_handler_proc_plast(lpcc_connection_t pConn,bool &i
 //-2，errno != EAGAIN != EWOULDBLOCK != EINTR ，一般我认为都是对端断开的错误
 ssize_t CSocket::sendproc(lpcc_connection_t c,char *buff,ssize_t size)  //ssize_t是有符号整型，在32位机器上等同与int，在64位机器上等同与long int，size_t就是无符号型的ssize_t
 {
-    //这里参考借鉴了官方nginx函数ngx_unix_send()的写法
     ssize_t   n;
 
     for ( ;; )

@@ -23,7 +23,7 @@ typedef struct  _STRUCT_LOGIN
 {
     char username[56];
     char password[40];
-}_STRUCT_LOGIN,*LPSTRUCT_LOGIN;
+}STRUCT_LOGIN,*LPSTRUCT_LOGIN;
 
 #pragma pack()
 
