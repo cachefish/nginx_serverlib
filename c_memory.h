@@ -2,7 +2,6 @@
 #define __C_MEMORY_H__
 #include<stddef.h>
 //分配内存
-
 class CMemory
 {
     private:
@@ -19,8 +18,7 @@ class CMemory
                 if(m_instance == NULL){
                      m_instance = new CMemory();
                      static CCrecovery c1;
-                }
-               
+                }   
             }
             return m_instance;
         }
@@ -34,7 +32,6 @@ class CMemory
                         }
                     }
         };
-
     public:
         void *AllocMemory(int memCount,bool ifmemset);
         void FreeMemory(void *point);
