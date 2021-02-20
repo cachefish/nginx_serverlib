@@ -22,7 +22,6 @@ typedef struct{
 static void cc_signal_handler(int signo, siginfo_t *siginfo, void *ucontext);
 static void cc_process_get_status(void);   
 
-
 cc_signal_t signals[] = {
     {SIGHUP,"SIGHUP",cc_signal_handler},                        //终端断开信号
     {SIGINT,"SIGINT",cc_signal_handler},                            //标识2
@@ -31,17 +30,15 @@ cc_signal_t signals[] = {
     {SIGQUIT,"SIGQUIT",cc_signal_handler},                      //标识3
     {SIGIO,"SIGIO",cc_signal_handler},                                  //指示一个异步I/O事件【通用异步I/O信号】
     {SIGSYS,"SIGSYS,SIG_IGN",NULL},                                     //我们想忽略这个信号，SIGSYS表示收到了一个无效系统调用，如果我们不忽略，进程会被操作系统杀死，--标识31
-
+    //------
     {0, NULL,NULL}
 
 };
-
 //初始化信号,用于注册信号处理程序
 int cc_init_signals()
 {
     cc_signal_t *sig;
     struct sigaction sa;
-
     for(sig = signals;sig->signo != 0;sig++){
         memset(&sa,0,sizeof(struct sigaction));
 
@@ -52,7 +49,6 @@ int cc_init_signals()
             sa.sa_handler = SIG_IGN;//sa_handler:这个标记SIG_IGN给到sa_handler成员，表示忽略信号的处理程序，否则操作系统的缺省信号处理程序很可能把这个进程杀掉
         }
         sigemptyset(&sa.sa_mask);
-
         if(sigaction(sig->signo,&sa,NULL)==-1){
             cc_log_error_core(CC_LOG_EMERG,errno,"sigaction(%s) filed",sig->signame);
             return -1;
@@ -63,12 +59,11 @@ int cc_init_signals()
     return 0;
 }
 
-
 //信号处理函数
 static void cc_signal_handler(int signo, siginfo_t *siginfo, void *ucontext)
 {
     //printf("来信号了\n");
-    cc_signal_t *sig;   //自定义结构
+    cc_signal_t *sig;  
     char *action;  
 
     for(sig = signals;sig->signo != 0; sig++)   //遍历信号数组
@@ -78,9 +73,7 @@ static void cc_signal_handler(int signo, siginfo_t *siginfo, void *ucontext)
             break;
         }
     }
-
     action = (char*)"";
-    
     if(cc_process == CC_PROCESS_MASTER)
     {
         //master进程
@@ -96,13 +89,12 @@ static void cc_signal_handler(int signo, siginfo_t *siginfo, void *ucontext)
     }
     else if(cc_process == CC_PROCESS_WORKER)    //worker进程
     {
-        //后续
+        //...
     }
     else 
     {
         //do nothing
     }
-
     //记录日志信息
     if(siginfo && siginfo->si_pid)
     {
@@ -111,7 +103,6 @@ static void cc_signal_handler(int signo, siginfo_t *siginfo, void *ucontext)
     else{
                 cc_log_error_core(CC_LOG_NOTICE,0,"signal %d (%s) received %s",signo, sig->signame, action);//没有发送该信号的进程id，所以不显示发送该信号的进程i
     }
-
     if(signo == SIGCHLD)    
     {
         cc_process_get_status();
@@ -125,16 +116,12 @@ static void cc_process_get_status(void)
     int status;
     int err;
     int one  = 0;
-
     for(;;){
-
         pid = waitpid(-1,&status,WNOHANG);      //会立刻返回而不是等待子进程的状态发生变化
-
         if(pid == 0)
         {
             return;
         }
-
         if(pid == -1)
         {
             err = errno;
@@ -142,7 +129,6 @@ static void cc_process_get_status(void)
             {
                 continue;
             }
-
             if(err == ECHILD && one)
             {
                 return;
@@ -155,7 +141,6 @@ static void cc_process_get_status(void)
             cc_log_error_core(CC_LOG_ALERT,err,"waitpid() failed!");
             return;
         }
-
         one = 1;
         if(WTERMSIG(status))    //获取使子进程终止的信号  测试作用通过信号来决定那个子线程被退出。  若成功返回被终止的子进程的信号值
         {
