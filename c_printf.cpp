@@ -1,5 +1,4 @@
 //和打印格式相关的函数放这里
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +11,6 @@
 
 //只用于本文件的一些函数声明就放在本文件中
 static u_char *cc_sprintf_num(u_char *buf, u_char *last, uint64_t ui64,u_char zero, uintptr_t hexadecimal, uintptr_t width);
-
 
 //----------------------------------------------------------------------------------------------------------------------
 u_char *cc_slprintf(u_char *buf, u_char *last, const char *fmt, ...) 
@@ -36,8 +34,6 @@ u_char * cc_snprintf(u_char *buf, size_t max, const char *fmt, ...)   //类print
     va_end(args);
     return p;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //例如，给进来一个 "abc = %d",13   ,最终buf里得到的应该是   abc=13 这种结果
