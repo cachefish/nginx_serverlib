@@ -1,6 +1,5 @@
 #ifndef __C_LOCKMUTEX_H__
 #define __C_LOCKMUTEX_H__
-
 #include<pthread.h>
 
 class CLock
@@ -14,8 +13,6 @@ class CLock
         {
             pthread_mutex_unlock(m_pMutex);
         }
-
-
     private:
         pthread_mutex_t *m_pMutex;
 
