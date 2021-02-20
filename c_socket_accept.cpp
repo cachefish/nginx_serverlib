@@ -11,13 +11,11 @@
 //#include <sys/socket.h>
 #include <sys/ioctl.h> //ioctl
 #include <arpa/inet.h>
-
 #include "c_conf.h"
 #include "c_macro.h"
 #include "c_global.h"
 #include "c_func.h"
 #include "c_socket.h"
-
 
 //建立新连接专用函数，当新连接进入时，本函数会被cc_epoll_process_events()所调用
 void CSocket::cc_event_accept(lpcc_connection_t oldc)
@@ -81,12 +79,10 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
             {
                 if(m_freeconnectionList.size() < m_worker_connections)
                 {
-                    //短时间内 产生大量连接，发一个包后就断开，我们不可能让这种情况持续发生，所以必须断开新入用户的连接
                     close(s);
                     return;
                 }
             }
-
             newc = cc_get_connection(s);
             if(newc == NULL){
                 if(close(s) == -1){
@@ -105,10 +101,8 @@ void CSocket::cc_event_accept(lpcc_connection_t oldc)
             }
 
             newc->listening = oldc->listening;                                                      //连接对象 和监听对象关联，方便通过连接对象找监听对象【关联到监听端口】
-            //newc->w_ready = 1;                                                                                   //标记可以写，新连接写事件肯定是ready的
             newc->rhandler = &CSocket::cc_read_request_handler;         //设置数据来时的读处理函数
             newc->whandler = &CSocket::cc_write_request_handler;
-
             if(cc_epoll_oper_event(s,
                                                             EPOLL_CTL_ADD,EPOLLIN|EPOLLRDHUP,
                                                             0,
