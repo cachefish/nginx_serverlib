@@ -1,4 +1,3 @@
-//守护进程相关
 #include<stdio.h>
 #include<stdlib.h>
 #include<unistd.h>
@@ -27,11 +26,9 @@ int cc_daemon()
         //父进程返回主流程中
         return 1;
     }
-
     //子进程操作
     cc_parent = cc_pid;
     cc_pid = getpid();  
-    
     //（2）脱离终端
     if(setsid()==-1) //让进程运行在新的会话里从而成为不属于此终端的子进程
     {
