@@ -1,6 +1,5 @@
 #ifndef __C_SOCKET_H__
 #define __C_SOCKET_H__
-
 #include<vector>
 #include<list>
 #include<sys/epoll.h>
