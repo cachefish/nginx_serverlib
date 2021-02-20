@@ -11,7 +11,6 @@
 //#include <sys/socket.h>
 #include <sys/ioctl.h> //ioctl
 #include <arpa/inet.h>
-
 #include "c_conf.h"
 #include "c_macro.h"
 #include "c_global.h"
@@ -60,9 +59,7 @@ LPSTRUC_MSG_HEADER CSocket::RemoveFirstTimer()
     --m_cur_size_;
     return p_tmp;
 }
-
 //根据给的当前时间，从m_timeQueuemap找到比这个时间更早的节点【1个】返回去
-
 LPSTRUC_MSG_HEADER CSocket::GetOverTimeTimer(time_t cur_time)
 {   
     CMemory *p_memory = CMemory::GetInstance();
@@ -94,13 +91,11 @@ LPSTRUC_MSG_HEADER CSocket::GetOverTimeTimer(time_t cur_time)
     }
     return NULL;
 }
-
-//把指定用户tcp连接从timer表中抠出去
+//把指定用户tcp连接从timer表中踢出去
 void CSocket::DeleteFromTimerQueue(lpcc_connection_t pConn)
 {
    // std::multimap<time_t, LPSTRUC_MSG_HEADER>::iterator pos,posend;
 	CMemory *p_memory = CMemory::GetInstance();
-
     CLock lock(&m_timerqueueMutex);
 
 lblMTQM:
