@@ -172,7 +172,6 @@ ssize_t CSocket::recvproc(lpcc_connection_t pConn,char *buff,ssize_t buflen)  //
     return n; //返回收到的字节数
 }
 
-
 //包头收完整后的处理，我们称为包处理阶段1【p1】：写成函数，方便复用
 void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn,bool &isflood)
 {
@@ -219,7 +218,7 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn,bool &isfl
         memcpy(pTmpBuffer,pPkgHeader,m_iLenPkgHeader); //直接把收到的包头拷贝进来
         if(e_pkgLen == m_iLenPkgHeader)
         {
-            //该报文只有包头无包体【我们允许一个包只有包头，没有包体】
+            //该报文只有包头无包体
             //这相当于收完整了，则直接入消息队列待后续业务逻辑线程去处理
             if(m_floodAkEnable == 1) 
             {
@@ -236,7 +235,6 @@ void CSocket::cc_wait_request_handler_proc_p1(lpcc_connection_t pConn,bool &isfl
             pConn->irecvlen = e_pkgLen - m_iLenPkgHeader;    //e_pkgLen是整个包【包头+包体】大小，-m_iLenPkgHeader【包头】  = 包体
         }                       
     }  //end if(e_pkgLen < m_iLenPkgHeader) 
-
     return;
 }
 
@@ -310,37 +308,6 @@ ssize_t CSocket::sendproc(lpcc_connection_t c,char *buff,ssize_t size)  //ssize_
         }
     } //end for
 }
-//---------------------------------------------------------------
-//当收到一个完整包之后，将完整包入消息队列，这个包在服务器端应该是 消息头+包头+包体 格式
-//参数：返回 接收消息队列当前信息数量irmqc，因为临界着，所以这个值也是OK的；
-// void CSocket::inMsgRecvQueue(char *buf,int &irmqc) //buf这段内存 ： 消息头 + 包头 + 包体
-// {
-//     CLock lock(&m_recvMessageQueueMutex);	 //自动加锁解锁很方便，不需要手工去解锁了
-//     m_MsgRecvQueue.push_back(buf);	         //入消息队列
-//     ++m_iRecvMsgQueueCount;                  //收消息队列数字+1，个人认为用变量更方便一点，比 m_MsgRecvQueue.size()高效
-//     irmqc = m_iRecvMsgQueueCount;            //接收消息队列当前信息数量保存到irmqc
-
-
-//     //收到了一个完整的数据包，打印一个信息
-//     //cc_log_stderr(0,"非常好，收到了一个完整的数据包【包头+包体】！");  
-    
-// }
-
-//从消息队列中把一个包提取出来以备后续处理
-// char *CSocket::outMsgRecvQueue() 
-// {
-//     CLock lock(&m_recvMessageQueueMutex);	//互斥
-//     if(m_MsgRecvQueue.empty())
-//     {
-//         return NULL; //也许会存在这种情形： 消息本该有，但被干掉了，这里可能为NULL的？        
-//     }
-//     char *sTmpMsgBuf = m_MsgRecvQueue.front(); //返回第一个元素但不检查元素存在与否
-//     m_MsgRecvQueue.pop_front();                //移除第一个元素但不返回	
-//     --m_iRecvMsgQueueCount;                    //收消息队列数字-1
-//     return sTmpMsgBuf;                         
-// }
-
-
 //设置数据发送时的写处理函数,当数据可写时epoll通知我们，我们在 int CSocket::cc_epoll_process_events(int timer)  中调用此函数
 //能走到这里，数据就是没法送完毕，要继续发送
 void CSocket::cc_write_request_handler(lpcc_connection_t pConn)
@@ -370,10 +337,7 @@ void CSocket::cc_write_request_handler(lpcc_connection_t pConn)
         }
         cc_log_stderr(0,"CSocket::cc_write_request_handler()中数据发送完毕");
     }
-   
     //数据发送完毕，或者把需要发送的数据干掉，都说明发送缓冲区可能有地方了，让发送线程往下走判断能否发送新数据
-
-    
     p_memory->FreeMemory(pConn->psendMemPointer);
     pConn->psendMemPointer = NULL;
     --pConn->iThrowsendCount;
@@ -383,7 +347,6 @@ void CSocket::cc_write_request_handler(lpcc_connection_t pConn)
     return;
 
 }
-
 //消息处理线程主函数，专门处理各种接收到的TCP消息
 //pMsgBuf：发送过来的消息缓冲区，消息本身是自解释的，通过包头可以计算整个包长
 //         消息本身格式【消息头+包头+包体】 
