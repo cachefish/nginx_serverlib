@@ -12,7 +12,6 @@
 
 #define _DATA_BUFSIZE_               20         //固定大小的数组用来收包头
 
-
 #pragma pack (1)
 
 typedef struct _COMM_PKG_HEADER
@@ -20,10 +19,9 @@ typedef struct _COMM_PKG_HEADER
     unsigned short pkgLen;      //报文总长度
     unsigned short msgCode; //消息类型
 
-    int                             crc32;       //校验
+    int                           crc32;       //校验
 
 }COMM_PKG_HEADER,*LPCOMM_PKG_HEADER;
-
 
 #pragma pack()
 
