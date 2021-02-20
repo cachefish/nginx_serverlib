@@ -17,7 +17,7 @@ void Rtrim(char *string)
     }
     return;
 }
-
+//删除左边空格
 void Ltrim(char *string)
 {
     size_t len = 0;
