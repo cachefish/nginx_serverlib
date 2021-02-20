@@ -11,7 +11,6 @@
 //#include <sys/socket.h>
 #include <sys/ioctl.h> //ioctl
 #include <arpa/inet.h>
-
 #include "c_conf.h"
 #include "c_macro.h"
 #include "c_global.h"
@@ -40,7 +39,6 @@ size_t CSocket::cc_sock_ntop(struct sockaddr *sa,int port,u_char *text,size_t le
         }
         return (p-text);
         break;
-    
     default:
         return 0;
         break;
