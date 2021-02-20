@@ -1,6 +1,5 @@
 #ifndef __C_THREADPOOL_H__
 #define __C_THREADPOOL_H__
-
 #include <vector>
 #include <pthread.h>
 #include <atomic>   
@@ -20,7 +19,7 @@ public:
     void StopAll();                             //使线程池中的所有线程退出
 
     void inMsgRecvQueueAndSingal(char *buf);//收到一个完整消息后，入消息队列，并触发线程池中线程来处理该消息
-    void Call();                       //来任务了，调一个线程池中的线程下来干活
+    void Call();                       //来任务，调一个线程池中的线程下来干活
     int  getRecvMsgQueueCount(){return m_iRecvMsgQueueCount;} //获取接收消息队列大小
 
 private:

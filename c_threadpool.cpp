@@ -1,6 +1,5 @@
 #include <stdarg.h>
 #include <unistd.h>  //usleep
-
 #include "c_global.h"
 #include "c_func.h"
 #include "c_threadpool.h"
@@ -37,7 +36,6 @@ void CThreadPool::clearMsgRecvQueue()
         m_MsgRecvQueue.pop_front();
         p_memory->FreeMemory(pTmpMempoint);
     }
-    
 }
 
 //创建线程池中的线程，要手工调用，不在构造函数里调用了
@@ -63,7 +61,6 @@ bool CThreadPool::Create(int threadNum)
             //创建线程成功
         }        
     } //end for
-
     std::vector<ThreadItem*>::iterator iter;
 lblfor:
     for(iter = m_threadVector.begin(); iter != m_threadVector.end(); iter++)
@@ -94,8 +91,7 @@ void* CThreadPool::ThreadFunc(void* threadData)
         //线程用pthread_mutex_lock()函数去锁定指定的mutex变量，若该mutex已经被另外一个线程锁定了，该调用将会阻塞线程直到mutex被解锁。  
         err = pthread_mutex_lock(&m_pthreadMutex);  
         if(err != 0) cc_log_stderr(err,"CThreadPool::ThreadFunc()pthread_mutex_lock()失败，返回的错误码为%d!",err);//有问题，要及时报告
-        
-
+    
         while( (pThreadPoolObj->m_MsgRecvQueue.size() == 0)&& m_shutdown == false)
         {
             //如果这个pthread_cond_wait被唤醒
@@ -105,9 +101,7 @@ void* CThreadPool::ThreadFunc(void* threadData)
            
             pthread_cond_wait(&m_pthreadCond, &m_pthreadMutex); //整个服务器程序刚初始化的时候，所有线程必然是卡在这里等待的；
         }
-        // err = pthread_mutex_unlock(&m_pthreadMutex); //先解锁mutex
-        // if(err != 0)  cc_log_stderr(err,"CThreadPool::ThreadFunc()pthread_mutex_unlock()失败，返回的错误码为%d!",err);//有问题，要及时报告
-        
+      
         //先判断线程退出这个条件
         if(m_shutdown)
         {            
@@ -128,7 +122,6 @@ void* CThreadPool::ThreadFunc(void* threadData)
 // cc_log_stderr(0,"执行开始---begin,tid=%ui!",tid);
 // sleep(5); //临时测试代码
 // cc_log_stderr(0,"执行结束---end,tid=%ui!",tid);
-
         p_memory->FreeMemory(jobbuf);              //释放消息内存 
         --pThreadPoolObj->m_iRunningThreadNum;     //原子-1
 
@@ -136,7 +129,6 @@ void* CThreadPool::ThreadFunc(void* threadData)
 
     return (void*)0;
 }
-
 //停止所有线程【等待结束线程池中所有线程，该函数返回后，应该是所有线程池中线程都结束了】
 void CThreadPool::StopAll() 
 {
@@ -153,7 +145,6 @@ void CThreadPool::StopAll()
         cc_log_stderr(err,"CThreadPool::StopAll()中pthread_cond_broadcast()失败，返回的错误码为%d!",err);
         return;
     }
-
     //(3)等等线程，让线程真返回    
     std::vector<ThreadItem*>::iterator iter;
 	for(iter = m_threadVector.begin(); iter != m_threadVector.end(); iter++)
@@ -172,7 +163,6 @@ void CThreadPool::StopAll()
 			delete *iter;
 	}
 	m_threadVector.clear();
-
     cc_log_stderr(0,"CThreadPool::StopAll()成功返回，线程池中线程全部正常结束!");
     return;    
 }
@@ -182,7 +172,6 @@ void CThreadPool::StopAll()
     if(err != 0){
          cc_log_stderr(err,"CThreadPool::inMsgRecvQueueAndSignal()pthread_mutex_lock()失败，返回的错误码为%d!",err);
     }
-
     m_MsgRecvQueue.push_back(buf);
     ++m_iRecvMsgQueueCount;
 
@@ -196,7 +185,6 @@ void CThreadPool::StopAll()
 
  }
 
-
 //来任务了，调一个线程池中的线程下来干活
 void CThreadPool::Call()
 {
@@ -205,7 +193,6 @@ void CThreadPool::Call()
     {
         cc_log_stderr(err,"CThreadPool::Call()中pthread_cond_signal()失败，返回的错误码为%d!",err);
     }
-  
     //(1)如果当前的工作线程全部都忙，则要报警
     //bool ifallthreadbusy = false;
     if(m_iThreadNum == m_iRunningThreadNum) //线程池中线程总量，跟当前正在干活的线程数量一样，说明所有线程都忙碌起来，线程不够用了
