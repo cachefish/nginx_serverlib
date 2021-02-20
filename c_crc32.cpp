@@ -1,20 +1,16 @@
 //和 crc32校验算法 有关的代码
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "c_crc32.h"
-
 //类静态变量初始化
 CCRC32 *CCRC32::m_instance = NULL;
 
-//构造函数
 CCRC32::CCRC32()
 {
 	Init_CRC32_Table();
 }
-//释放函数
 CCRC32::~CCRC32()
 {
 }

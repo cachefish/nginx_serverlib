@@ -1,6 +1,5 @@
 #ifndef __C_CRC32_H__
 #define __C_CRC32_H__
-
 #include<stddef.h>
 
 class CCRC32
