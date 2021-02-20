@@ -17,7 +17,6 @@ typedef struct{
         int fd; //日志文件描述符
 }cc_log_t;
 
-
 //外部全局量声明
 extern size_t g_argvneedmem;
 extern size_t g_envneedmem;
