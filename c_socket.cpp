@@ -23,10 +23,6 @@ CSocket::CSocket():m_worker_connections(1),
 m_epollhandle(-1),
 m_ListenPortCount(1),
 m_RecyConnectionWaitTime(60),
-//m_pconnections(NULL),
-//m_pfree_connections(NULL),
-//m_pread_events(NULL),
-//m_pwrite_events(NULL)
 m_iLenPkgHeader(sizeof(COMM_PKG_HEADER)),
 m_iLenMsgHeader(sizeof(STRUC_MSG_HEADER)),
 m_iSendMsgQueueCount(0),
@@ -50,28 +46,8 @@ CSocket::~CSocket()
     }
     m_ListenSocketList.clear();
 
-    //连接池相关释放
-    // if(m_pwrite_events != NULL){
-    //     delete [] m_pwrite_events;
-    // }
-    // if(m_pread_events != NULL){
-    //     delete [] m_pread_events;
-    // }
 }
 
-// void CSocket::clearMsgRecvQueue()                                           //清理接收消息队列
-// {
-//     char *sTmpMempoint;
-//     CMemory *p_memory = CMemory::GetInstance();
-
-//     while (!m_MsgRecvQueue.empty())
-//     {
-//         sTmpMempoint = m_MsgRecvQueue.front();
-//         m_MsgRecvQueue.pop_front();
-//         p_memory->FreeMemory(sTmpMempoint);
-//     }
-    
-// }
 
 //初始化
 bool CSocket::Initialize()
@@ -236,7 +212,6 @@ bool CSocket::cc_open_listening_sockets()
             cc_log_stderr(errno,"CSocket::cc_open_listening_sockets()中的socket()失败，i=%d ",i);
             return false;
         }
-
         //setsockopt（）:设置一些套接字参数选项；
         //参数2：是表示级别，和参数3配套使用，也就是说，参数3如果确定了，参数2就确定了;
         //参数3：允许重用本地地址
@@ -253,7 +228,6 @@ bool CSocket::cc_open_listening_sockets()
         {
             cc_log_stderr(errno,"CSocket::Initialize()中setsockopt(SO_REUSEPORT)失败");
         }
-
         //设置非阻塞
         if(setnonblock(isock) == false)
         {
@@ -261,7 +235,6 @@ bool CSocket::cc_open_listening_sockets()
             close(isock);
             return false;
         }
-        
         //设置本服务器要监听的地址和端口，
         strinfo[0] = 0;
         sprintf(strinfo,"ListenPort%d",i);
@@ -275,7 +248,6 @@ bool CSocket::cc_open_listening_sockets()
             close(isock);
             return false;
         }        
-
         //开始监听
         if(listen(isock,CC_LISTEN_BACKLOG)==-1)
         {
@@ -283,12 +255,10 @@ bool CSocket::cc_open_listening_sockets()
             close(isock);
             return false;
         }
-
         lpcc_listening_t p_listensocketitem = new cc_listening_t;
         memset(p_listensocketitem,0,sizeof(cc_listening_t));
         p_listensocketitem->port = iport;
         p_listensocketitem->fd = isock;
-
         cc_log_error_core(CC_LOG_INFO,0,"监听%d端口成功！",iport);
         m_ListenSocketList.push_back(p_listensocketitem);
     }
@@ -296,7 +266,6 @@ bool CSocket::cc_open_listening_sockets()
         return false;
     return true;
 }
-
 //设置socket连接为非阻塞模式
 bool CSocket::setnonblock(int sockfd)
 {
@@ -333,7 +302,6 @@ void CSocket::cc_close_listening_sockets()
     }
     return ;
 }
-
 //将一个待发送消息入到发消息队列
 void CSocket::msgSend(char *psendbuf)
 {   
@@ -450,33 +418,7 @@ int CSocket::cc_epoll_init()
      //创建连接池【数组】、创建出来，这个东西后续用于处理所有客户端的连接
     initconnection();
 
-    //m_connection_n = m_worker_connections;      //记录当前连接池中连接总数
     
-    //m_pconnections = new cc_connection_t[m_connection_n];   
-
-    // m_pread_events = new cc_event_t[m_connection_n];
-    // m_pwrite_events = new cc_event_t[m_connection_n];
-    // for(int i =0;i < m_connection_n; i++){
-    //     m_pconnections[i].instance = 1;     //失效标志位设置为1
-    // }
-/*
-    int i = m_connection_n;
-    lpcc_connection_t next = NULL;
-    lpcc_connection_t c = m_pconnections;
-
-    do{
-        i--;
-        c[i].next = next;                    //设置连接对象的next指针
-        c[i].fd = -1;                              //初始化连接，无socket和该连接池中的连接【对象】绑定
-        c[i].instance = 1;                  //失效标志位设置为1【失效】
-        c[i].iCurrsequence = 0;     //当前序号统一从0开始
-
-        next = &c[i];                           //next指针前移
-    }while(i);
-
-    m_pfree_connections = next; //设置空闲连接链表头指针,因为现在next指向c[0]，现在整个链表都是空的
-    m_free_connection_n = m_connection_n;       //空闲连接链表长度，因为现在整个链表都是空的，这两个长度相等；
-*/
     //(3)遍历所有监听socket【监听端口】，为每个监听socket增加一个 连接池中的连接
     //让一个socket和一个内存绑定，以方便记录该sokcet相关的数据、状态等等
     std::vector<lpcc_listening_t>::iterator  pos;
@@ -506,47 +448,6 @@ int CSocket::cc_epoll_init()
     }
     return 1;
 }
-
-/*
-//epoll增加事件，可能被cc_epoll_init()等函数调用
-//fd:句柄，一个socket
-//readevent：表示是否是个读事件，0是，1不是
-//writeevent：表示是否是个写事件，0是，1不是
-//otherflag：其他需要额外补充的标记，弄到这里
-//eventtype：事件类型  ，一般就是用系统的枚举值，增加，删除，修改等;
-//c：对应的连接池中的连接的指针
-//返回值：成功返回1，失败返回-1；
-
-int CSocket::cc_epoll_add_event(int fd,
-                                int readevent,int writeevent,
-                                uint32_t otherflag, 
-                                uint32_t eventtype, 
-                                lpcc_connection_t c
-                                )
-{
-        struct epoll_event ev;
-        
-        memset(&ev,0,sizeof(ev));
-
-        if(readevent == 1){
-            ev.events = EPOLLIN|EPOLLRDHUP;
-        }else{
-            //其他事件类型
-
-        }
-
-        if(otherflag != 0){
-            ev.events = otherflag;
-        }
-
-        ev.data.ptr = (void*)((uintptr_t)c | c->instance);//把对象弄进去，后续来事件时，用epoll_wait()后，这个对象能取出来用
-        if(epoll_ctl(m_epollhandle,eventtype,fd,&ev) == -1){
-            cc_log_stderr(errno,"CSocekt::cc_epoll_add_event()中epoll_ctl(%d,%d,%d,%ud,%ud)失败.",fd,readevent,writeevent,otherflag,eventtype);
-            return -1;
-        }
-        return 1;
-}
-*/
 
 //对epoll事件的具体操作
 int CSocket::cc_epoll_oper_event( int                fd,               //句柄，一个socket
@@ -595,7 +496,6 @@ int CSocket::cc_epoll_oper_event( int                fd,               //句柄�
     return 1;
 }
 
-
 //开始获取发生的事件消息
 //参数unsigned int timer：epoll_wait()阻塞的时长，单位是毫秒；
 //返回值，1：正常返回  ,0：有问题返回，一般不管是正常还是问题返回，都应该保持进程继续运行
@@ -626,32 +526,15 @@ int CSocket::cc_epoll_process_events(int timer)
         cc_log_error_core(CC_LOG_ALERT,errno,"CSocket::cc_epoll_process_events中epoll_wait()没超时却没返回任何事件!");
         return 0;
     }
-
-
     //有事件收到
     lpcc_connection_t pConn;
   //  uintptr_t                     instance;
     uint32_t                     revents;
     for(int i =0;i<events;++i){         //遍历本次epoll_wait返回的所有事件，events才是返回的实际事件数量
-        pConn = (lpcc_connection_t)(m_events[i].data.ptr);      //将地址的最后一位取出来，用instance变量标识, 见cc_epoll_add_event，该值是当时随着连接池中的连接一起给进来的
-       /* instance = (uintptr_t)c&1;
-        c = (lpcc_connection_t)((uintptr_t)c&(uintptr_t)~1);//最后1位干掉，得到真正的c地址
-
-        if(c->fd == -1){
-            cc_log_error_core(CC_LOG_DEBUG,0,"CSocekt::cc_epoll_process_events()中遇到了fd=-1的过期事件:%p.",c); 
-            continue; //这种事件就不处理即可
-        }
-        if(c->instance != instance){
-            cc_log_error_core(CC_LOG_DEBUG,0,"CSocekt::cc_epoll_process_events()中遇到了instance值改变的过期事件:%p.",c); 
-            continue; //这种事件就不处理即可
-        }
-        */
+        pConn = (lpcc_connection_t)(m_events[i].data.ptr);      
+    
         //事件未过期，开始处理
         revents = m_events[i].events;
-
-        // if(revents&(EPOLLERR|EPOLLHUP)){        //如果发生了错误或者客户端断连
-        //     revents |= EPOLLIN|EPOLLOUT;
-        // }
 
 
         if(revents&EPOLLIN){                                        //如果是读事件
@@ -673,7 +556,6 @@ int CSocket::cc_epoll_process_events(int timer)
 
 //--------------------------------------------------------------------
 //处理发送消息队列的线程
-
 void* CSocket::ServerSendQueueThread(void* threadData)
 {
     ThreadItem *pThread = static_cast<ThreadItem*>(threadData);
