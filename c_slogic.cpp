@@ -44,10 +44,8 @@ static const handler statusHandler[] =
     &CLogicSocket::_HandleLogIn,                            //【6】：实现具体的登录功能
     //......其他待扩展，比如实现攻击功能，实现加血功能等等；
 
-
 };
 #define AUTH_TOTAL_COMMANDS sizeof(statusHandler)/sizeof(handler) //整个命令有多少个，编译时即可知道
-
 //构造函数
 CLogicSocket::CLogicSocket()
 {
@@ -58,14 +56,12 @@ CLogicSocket::~CLogicSocket()
 {
 
 }
-
 //初始化函数【fork()子进程之前干这个事】
 //成功返回true，失败返回false
 bool CLogicSocket::Initialize()
 {
     //做一些和本类相关的初始化工作
     //....日后根据需要扩展
-        
     bool bParentInit = CSocket::Initialize();  //调用父类的同名函数
     return bParentInit;
 }
@@ -134,7 +130,6 @@ void CLogicSocket::threadRecvProcFunc(char *pMsgBuf)
     return;	
 }
 
-
 //心跳包检测时间到，该去检测心跳包是否超时的事宜，本函数是子类函数，实现具体的判断动作
 void CLogicSocket::procPingTimeOutChecking(LPSTRUC_MSG_HEADER tmpmsg,time_t cur_time)
 {
@@ -178,10 +173,6 @@ void CLogicSocket::SendNoBodyPkgToClient(LPSTRUC_MSG_HEADER pMsgHeader,unsigned 
     msgSend(p_sendbuf);
     return;
 }
-
-
-
-
 
 //----------------------------------------------------------------------------------------------------------
 //处理各种业务逻辑
@@ -234,12 +225,6 @@ bool CLogicSocket::_HandleRegister(lpcc_connection_t pConn,LPSTRUC_MSG_HEADER pM
     pPkgHeader->crc32 = htonl(pPkgHeader->crc32);
     //f)发送数据包
     msgSend(p_sendbuf);
-    // if(cc_epoll_oper_event(pConn->fd,EPOLL_CTL_MOD,EPOLLOUT,0,pConn)==-1){
-    //         cc_log_stderr(0,"1111111111111111111111111111111111111111111111111111111111111!");
-
-    // }
-
-
    // cc_log_stderr(0,"执行了CLogicSocket::_HandleRegister()!");
     return true;
 }

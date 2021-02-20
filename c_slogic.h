@@ -1,6 +1,5 @@
 #ifndef __C_SLOGIC_H__
 #define __C_SLOGIC_H__
-
 #include <sys/socket.h>
 #include "c_socket.h"
 
