@@ -1,5 +1,4 @@
 //整个程序入口函数放这里
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,8 +33,6 @@ pid_t cc_pid;               //当前进程的pid
 pid_t cc_parent;        //父进程的pid
 int cc_process; //进程类型，如master  worker 
 int g_stopEvent;        //标志程序退出
-
-
 //socket相关
 CLogicSocket g_socket;
 CThreadPool g_threadpool;
@@ -123,9 +120,7 @@ int main(int argc, char *const *argv)
 //----------------------------------------------------------------------------------------//
     // 开始正式的主流程，主流程一致在下边这个函数里循环
     cc_master_process_cycle();  
-
 //----------------------------------------------------------------------------------------// 
-
 lblexit:
     //(5)该释放的资源要释放掉
     cc_log_stderr(0,"程序退出");
@@ -133,11 +128,10 @@ lblexit:
     
     return exitcode;
 }
-
-//专门在程序执行末尾释放资源的函数【一系列的main返回前的释放动作函数】
+//专门在程序执行末尾释放资源的函数
 void freeresource()
 {
-    //(1)对于因为设置可执行程序标题导致的环境变量分配的内存，我们应该释放
+    //(1)对于因为设置可执行程序标题导致的环境变量分配的内存进行释放
     if(gp_envmem)
     {
         delete []gp_envmem;
@@ -147,7 +141,7 @@ void freeresource()
     //(2)关闭日志文件
     if(cc_log.fd != STDERR_FILENO && cc_log.fd != -1)  
     {        
-        close(cc_log.fd); //不用判断结果了
-        cc_log.fd = -1; //标记下，防止被再次close吧        
-    }
+        close(cc_log.fd); 
+        cc_log.fd = -1;
+    }     
 }
