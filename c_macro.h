@@ -1,19 +1,15 @@
 #ifndef __C_MACRO_H__
 #define __C_MACRO_H__
-
 //用来存放宏定义
 #define CC_MAX_ERROR_STR 2048   //显示的错误信息最大数组长度
-
 //功能函数
 #define cc_cpymem(dst,src,n) (((u_char *)memcpy(dst,src,n))+(n))
 #define cc_min(val1,val2) ((val1>val2)?(val2):(val1))
-
 //数字相关
 #define CC_MAX_UINT32_VALUE (uint32_t) 0xffffffff
 #define CC_INT64_LEN  (sizeof("-9223372036854775808")-1)
-
 //日志相关--------------------
-//我们把日志一共分成八个等级【级别从高到低，数字最小的级别最高，数字大的级别最低】，以方便管理、显示、过滤等等
+//日志一共分成八个等级【级别从高到低，数字最小的级别最高，数字大的级别最低】，以方便管理、显示、过滤等等
 #define CC_LOG_STDERR            0    //控制台错误【stderr】：最高级别日志，日志的内容不再写入log参数指定的文件，而是会直接将日志输出到标准错误设备比如控制台屏幕
 #define CC_LOG_EMERG             1    //紧急 【emerg】
 #define CC_LOG_ALERT             2    //警戒 【alert】
