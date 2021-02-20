@@ -23,7 +23,6 @@ class CConfig
             }
             return m_instance;
         }
-
         class CCrecovery{
             public:
                 ~CCrecovery(){
@@ -38,8 +37,7 @@ class CConfig
         const char *getString(const char *p_itemName);
         int GetIntDefault(const char*p_itemname,const int def);
     public:
-        vector<LPCConfItem> m_ConfigItemList;   //存储配置信息的列表
-    
+        vector<LPCConfItem> m_ConfigItemList;   //存储配置信息的列表 
 };
 
 #endif
