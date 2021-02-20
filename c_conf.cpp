@@ -2,13 +2,11 @@
 #include<stdlib.h>
 #include<string.h>
 #include<vector>
-
 #include"c_func.h"
 #include"c_conf.h"
 using std::vector;
 
 CConfig *CConfig::m_instance = nullptr;
-
 //构造
 CConfig::CConfig(){}
 //析构函数
@@ -20,7 +18,6 @@ CConfig::~CConfig()
     }
     m_ConfigItemList.clear();
 }
-
 //装载配置文件
 bool CConfig::Load(const char *pconfName)
 {
@@ -29,10 +26,8 @@ bool CConfig::Load(const char *pconfName)
     if(fp==nullptr){
         return false;
     }
-
     //保存每行配置文件
     char linebuf[501];
-    
     while(!feof(fp)){
         if(fgets(linebuf,500,fp)==nullptr){
             continue;
@@ -44,7 +39,6 @@ bool CConfig::Load(const char *pconfName)
         if(*linebuf==';'||*linebuf==' '||*linebuf=='#'||*linebuf=='\t'||*linebuf=='\n'){
             continue;
         }
-
 
     lblprocstring:
         //将后面的空行 回车 空格都截取
@@ -74,7 +68,7 @@ bool CConfig::Load(const char *pconfName)
 			Rtrim(p_confitem->ItemContent);
 			Ltrim(p_confitem->ItemContent);
           // printf("itemname=%s | itemcontent=%s\n",p_confitem->ItemName,p_confitem->ItemContent);
-            m_ConfigItemList.push_back(p_confitem);  //内存要释放，因为这里是new出来的
+            m_ConfigItemList.push_back(p_confitem);  
         }
     }
     fclose(fp);
